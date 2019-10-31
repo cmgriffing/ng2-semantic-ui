@@ -1,8 +1,23 @@
 import {
-    Component, Input, HostBinding, HostListener, EventEmitter, ViewContainerRef,
-    ViewChild, Renderer2, ElementRef, Output, ChangeDetectorRef, TemplateRef
+    Component,
+    Input,
+    HostBinding,
+    HostListener,
+    EventEmitter,
+    ViewContainerRef,
+    ViewChild,
+    Renderer2,
+    ElementRef,
+    Output,
+    ChangeDetectorRef,
+    TemplateRef
 } from "@angular/core";
-import { SuiTransition, TransitionController, Transition, TransitionDirection } from "../../transition/index";
+import {
+    SuiTransition,
+    TransitionController,
+    Transition,
+    TransitionDirection
+} from "../../transition/index";
 import { HandledEvent, SuiComponentFactory } from "../../../misc/util/index";
 import { IOptionContext } from "../classes/select-base";
 
@@ -12,81 +27,93 @@ const templateRef = TemplateRef;
 @Component({
     selector: "sui-multi-select-label",
     template: `
-<span #templateSibling></span>
-<span *ngIf="!template" [innerHTML]="formatter(value)"></span>
-<i class="delete icon" (click)="deselectOption($event)"></i>
-`
+        <span #templateSibling></span>
+        <span *ngIf="!template" [innerHTML]="formatter(value)"></span>
+        <i class="delete icon" (click)="deselectOption($event)"></i>
+    `
 })
 export class SuiMultiSelectLabel<T> extends SuiTransition {
     // Sets the Semantic UI classes on the host element.
     // Doing it on the host enables use in menus etc.
     @HostBinding("class.ui")
     @HostBinding("class.label")
-    private _labelClasses:boolean;
+    private _labelClasses: boolean;
 
-    private _transitionController:TransitionController;
-
-    @Input()
-    public value:T;
+    private _transitionController: TransitionController;
 
     @Input()
-    public query?:string;
+    public value: T;
+
+    @Input()
+    public query?: string;
 
     @Output("deselected")
-    public onDeselected:EventEmitter<T>;
+    public onDeselected: EventEmitter<T>;
 
     @Input()
-    public formatter:(obj:T) => string;
+    public formatter: (obj: T) => string;
 
-    private _template?:TemplateRef<IOptionContext<T>>;
+    private _template?: TemplateRef<IOptionContext<T>>;
 
     @Input()
-    public get template():TemplateRef<IOptionContext<T>> | undefined {
+    public get template(): TemplateRef<IOptionContext<T>> | undefined {
         return this._template;
     }
 
-    public set template(template:TemplateRef<IOptionContext<T>> | undefined) {
+    public set template(template: TemplateRef<IOptionContext<T>> | undefined) {
         this._template = template;
         if (this.template) {
-            this.componentFactory.createView(this.templateSibling, this.template, {
-                $implicit: this.value,
-                query: this.query
-            });
+            this.componentFactory.createView(
+                this.templateSibling,
+                this.template,
+                {
+                    $implicit: this.value,
+                    query: this.query
+                }
+            );
         }
     }
 
     // Placeholder to draw template beside.
-    @ViewChild("templateSibling", { read: ViewContainerRef })
-    public templateSibling:ViewContainerRef;
+    @ViewChild("templateSibling", { read: ViewContainerRef, static: false })
+    public templateSibling: ViewContainerRef;
 
-    constructor(renderer:Renderer2,
-                element:ElementRef,
-                changeDetector:ChangeDetectorRef,
-                public componentFactory:SuiComponentFactory) {
-
+    constructor(
+        renderer: Renderer2,
+        element: ElementRef,
+        changeDetector: ChangeDetectorRef,
+        public componentFactory: SuiComponentFactory
+    ) {
         super(renderer, element, changeDetector);
 
         // Initialise transition functionality.
-        this._transitionController = new TransitionController(false, "inline-block");
+        this._transitionController = new TransitionController(
+            false,
+            "inline-block"
+        );
         this.setTransitionController(this._transitionController);
 
         this.onDeselected = new EventEmitter<T>();
 
         this._labelClasses = true;
 
-        this._transitionController.animate(new Transition("scale", 100, TransitionDirection.In));
+        this._transitionController.animate(
+            new Transition("scale", 100, TransitionDirection.In)
+        );
     }
 
-    public deselectOption(e:HandledEvent):void {
+    public deselectOption(e: HandledEvent): void {
         e.eventHandled = true;
 
         this._transitionController.animate(
             new Transition("scale", 100, TransitionDirection.Out, () =>
-                this.onDeselected.emit(this.value)));
+                this.onDeselected.emit(this.value)
+            )
+        );
     }
 
     @HostListener("click", ["$event"])
-    public onClick(e:HandledEvent):void {
+    public onClick(e: HandledEvent): void {
         e.eventHandled = true;
     }
 }

@@ -1,9 +1,21 @@
 import {
-    Component, Directive, Input, Output, HostListener, HostBinding,
-    EventEmitter, ViewChild, ElementRef, ContentChildren, AfterContentInit, QueryList
+    Component,
+    Directive,
+    Input,
+    Output,
+    HostListener,
+    HostBinding,
+    EventEmitter,
+    ViewChild,
+    ElementRef,
+    ContentChildren,
+    AfterContentInit,
+    QueryList
 } from "@angular/core";
 import {
-    ICustomValueAccessorHost, customValueAccessorFactory, CustomValueAccessor,
+    ICustomValueAccessorHost,
+    customValueAccessorFactory,
+    CustomValueAccessor,
     Util
 } from "../../../misc/util/index";
 import { Subscription } from "rxjs";
@@ -11,57 +23,59 @@ import { Subscription } from "rxjs";
 @Component({
     selector: "sui-radio-button",
     template: `
-<input class="hidden"
-       type="checkbox"
-       [attr.name]="name"
-       [attr.checked]="checkedAttribute"
-       [attr.disabled]="isDisabledAttribute"
-       [ngModel]="isChecked"
-       (ngModel)="currentValue = value"
-       #radio>
-<label>
-    <ng-content></ng-content>
-</label>
-`
+        <input
+            class="hidden"
+            type="checkbox"
+            [attr.name]="name"
+            [attr.checked]="checkedAttribute"
+            [attr.disabled]="isDisabledAttribute"
+            [ngModel]="isChecked"
+            (ngModel)="currentValue = value"
+            #radio
+        />
+        <label>
+            <ng-content></ng-content>
+        </label>
+    `
 })
 export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     @HostBinding("class.ui")
     @HostBinding("class.radio")
     @HostBinding("class.checkbox")
-    private _radioClasses:boolean = true;
+    private _radioClasses: boolean = true;
 
     @Input()
-    public name:string;
+    public name: string;
 
     @Input()
-    public value:T;
+    public value: T;
 
     @HostBinding("class.checked")
-    public isChecked:boolean;
+    public isChecked: boolean;
 
-    public currentValue:T;
+    public currentValue: T;
 
     @Output("currentValueChange")
-    public onCurrentValueChange:EventEmitter<T>;
+    public onCurrentValueChange: EventEmitter<T>;
 
     @Output("touched")
-    public onTouched:EventEmitter<void>;
+    public onTouched: EventEmitter<void>;
 
     @Input()
-    public isDisabled:boolean;
+    public isDisabled: boolean;
 
     @HostBinding("class.read-only")
     @Input()
-    public isReadonly:boolean;
+    public isReadonly: boolean;
 
-    @ViewChild("radio")
-    private _radioElement:ElementRef;
+    @ViewChild("radio", { static: false })
+    private _radioElement: ElementRef;
 
-    public get checkedAttribute():string | undefined {
+    public get checkedAttribute(): string | undefined {
         return this.isChecked ? "" : undefined;
     }
 
-    public get isDisabledAttribute():string | undefined {
+    public get isDisabledAttribute(): string | undefined {
         return this.isDisabled ? "disabled" : undefined;
     }
 
@@ -77,12 +91,12 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     }
 
     @HostListener("mousedown", ["$event"])
-    public onMouseDown(e:MouseEvent):void {
+    public onMouseDown(e: MouseEvent): void {
         e.preventDefault();
     }
 
     @HostListener("click")
-    public onClick():void {
+    public onClick(): void {
         if (!this.isDisabled && !this.isReadonly) {
             this.currentValue = this.value;
             this.onCurrentValueChange.emit(this.currentValue);
@@ -92,20 +106,20 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     }
 
     @HostListener("focusout")
-    public onFocusOut():void {
+    public onFocusOut(): void {
         this.onTouched.emit();
     }
 
-    public update():void {
+    public update(): void {
         this.isChecked = this.currentValue === this.value;
     }
 
-    public writeValue(value:T):void {
+    public writeValue(value: T): void {
         this.currentValue = value;
         this.update();
     }
 
-    private focusRadio():void {
+    private focusRadio(): void {
         this._radioElement.nativeElement.focus();
     }
 }
@@ -118,8 +132,11 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     },
     providers: [customValueAccessorFactory(SuiRadioValueAccessor)]
 })
-export class SuiRadioValueAccessor<T> extends CustomValueAccessor<T, SuiRadio<T>> {
-    constructor(host:SuiRadio<T>) {
+export class SuiRadioValueAccessor<T> extends CustomValueAccessor<
+    T,
+    SuiRadio<T>
+> {
+    constructor(host: SuiRadio<T>) {
         super(host);
     }
 }

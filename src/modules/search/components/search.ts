@@ -1,195 +1,242 @@
 import {
-    Component, ViewChild, HostBinding, Input, AfterViewInit, HostListener,
-    EventEmitter, Output, Directive, ElementRef, TemplateRef, Renderer2, OnDestroy
+    Component,
+    ViewChild,
+    HostBinding,
+    Input,
+    AfterViewInit,
+    HostListener,
+    EventEmitter,
+    Output,
+    Directive,
+    ElementRef,
+    TemplateRef,
+    Renderer2,
+    OnDestroy
 } from "@angular/core";
-import { Util, ITemplateRefContext, IFocusEvent } from "../../../misc/util/index";
+import {
+    Util,
+    ITemplateRefContext,
+    IFocusEvent
+} from "../../../misc/util/index";
 import { DropdownService, SuiDropdownMenu } from "../../dropdown/index";
-import { ISearchLocaleValues, RecursivePartial, SuiLocalizationService } from "../../../behaviors/localization/index";
+import {
+    ISearchLocaleValues,
+    RecursivePartial,
+    SuiLocalizationService
+} from "../../../behaviors/localization/index";
 import { SearchService } from "../services/search.service";
 import { LookupFn, FilterFn } from "../helpers/lookup-fn";
 
 export interface IResultContext<T> extends ITemplateRefContext<T> {
-    query:string;
+    query: string;
 }
 
 @Component({
     selector: "sui-search",
     template: `
-<div class="ui input" [class.icon]="hasIcon" (click)="onClick($event)">
-    <input class="prompt" type="text" [attr.placeholder]="placeholder" autocomplete="off" [(ngModel)]="query">
-    <i *ngIf="hasIcon" class="search icon"></i>
-</div>
-<div class="results"
-     suiDropdownMenu
-     [menuTransition]="transition"
-     [menuTransitionDuration]="transitionDuration"
-     menuSelectedItemClass="active">
+        <div class="ui input" [class.icon]="hasIcon" (click)="onClick($event)">
+            <input
+                class="prompt"
+                type="text"
+                [attr.placeholder]="placeholder"
+                autocomplete="off"
+                [(ngModel)]="query"
+            />
+            <i *ngIf="hasIcon" class="search icon"></i>
+        </div>
+        <div
+            class="results"
+            suiDropdownMenu
+            [menuTransition]="transition"
+            [menuTransitionDuration]="transitionDuration"
+            menuSelectedItemClass="active"
+        >
+            <sui-search-result
+                *ngFor="let r of results"
+                class="item"
+                [value]="r"
+                [query]="query"
+                [formatter]="resultFormatter"
+                [template]="resultTemplate"
+                (click)="select(r)"
+            ></sui-search-result>
 
-    <sui-search-result *ngFor="let r of results"
-                       class="item"
-                       [value]="r"
-                       [query]="query"
-                       [formatter]="resultFormatter"
-                       [template]="resultTemplate"
-                       (click)="select(r)"></sui-search-result>
+            <div *ngIf="results.length == 0" class="message empty">
+                <div class="header">{{ localeValues.noResults.header }}</div>
+                <div class="description">
+                    {{ localeValues.noResults.message }}
+                </div>
+            </div>
+        </div>
+    `,
+    styles: [
+        `
+            /* Ensures results div has margin. */
+            :host {
+                display: inline-block;
+            }
 
-    <div *ngIf="results.length == 0" class="message empty">
-        <div class="header">{{ localeValues.noResults.header }}</div>
-        <div class="description">{{ localeValues.noResults.message }}</div>
-    </div>
-</div>
-`,
-    styles: [`
-/* Ensures results div has margin. */
-:host {
-    display: inline-block;
-}
-
-/* Fixes positioning when results are pushed above the search. */
-.results {
-    margin-bottom: .5em;
-}
-`]
+            /* Fixes positioning when results are pushed above the search. */
+            .results {
+                margin-bottom: 0.5em;
+            }
+        `
+    ]
 })
 export class SuiSearch<T> implements AfterViewInit, OnDestroy {
-    public dropdownService:DropdownService;
-    public searchService:SearchService<T, T>;
+    public dropdownService: DropdownService;
+    public searchService: SearchService<T, T>;
 
-    @ViewChild(SuiDropdownMenu)
-    private _menu:SuiDropdownMenu;
+    @ViewChild(SuiDropdownMenu, { static: false })
+    private _menu: SuiDropdownMenu;
 
     // Sets the Semantic UI classes on the host element.
     // Doing it on the host enables use in menus etc.
     @HostBinding("class.ui")
     @HostBinding("class.search")
-    private _searchClasses:boolean;
+    private _searchClasses: boolean;
 
     @HostBinding("class.active")
-    public get isActive():boolean {
+    public get isActive(): boolean {
         return this.dropdownService.isOpen;
     }
 
     // Sets whether the search element has a visible search icon.
     @Input()
-    public hasIcon:boolean;
+    public hasIcon: boolean;
 
-    private _placeholder:string;
+    private _placeholder: string;
 
     // Gets & sets the placeholder text displayed inside the text input.
     @Input()
-    public get placeholder():string {
+    public get placeholder(): string {
         return this._placeholder || this.localeValues.placeholder;
     }
 
-    public set placeholder(placeholder:string) {
+    public set placeholder(placeholder: string) {
         this._placeholder = placeholder;
     }
 
-    private _localeValues:ISearchLocaleValues;
+    private _localeValues: ISearchLocaleValues;
 
-    public localeOverrides:RecursivePartial<ISearchLocaleValues>;
+    public localeOverrides: RecursivePartial<ISearchLocaleValues>;
 
-    public get localeValues():ISearchLocaleValues {
-        return this._localizationService.override<"search">(this._localeValues, this.localeOverrides);
+    public get localeValues(): ISearchLocaleValues {
+        return this._localizationService.override<"search">(
+            this._localeValues,
+            this.localeOverrides
+        );
     }
 
-    public get query():string {
+    public get query(): string {
         return this.searchService.query;
     }
 
-    public set query(query:string) {
+    public set query(query: string) {
         this.selectedResult = undefined;
         // Initialise a delayed search.
         this.searchService.updateQueryDelayed(query, () =>
             // Set the results open state depending on whether a query has been entered.
-            this.dropdownService.setOpenState(this.searchService.query.length > 0));
+            this.dropdownService.setOpenState(
+                this.searchService.query.length > 0
+            )
+        );
     }
 
     @Input()
-    public set options(options:T[] | undefined) {
+    public set options(options: T[] | undefined) {
         if (options) {
             this.searchService.options = options;
         }
     }
 
     @Input()
-    public set optionsFilter(filter:FilterFn<T> | undefined) {
+    public set optionsFilter(filter: FilterFn<T> | undefined) {
         if (filter) {
             this.searchService.optionsFilter = filter;
         }
     }
 
     @Input()
-    public set optionsLookup(lookupFn:LookupFn<T> | undefined) {
+    public set optionsLookup(lookupFn: LookupFn<T> | undefined) {
         this.searchService.optionsLookup = lookupFn;
     }
 
     @Input()
-    public set optionsField(field:string | undefined) {
+    public set optionsField(field: string | undefined) {
         this.searchService.optionsField = field;
     }
 
-    private _resultFormatter?:(r:T, q:string) => string;
+    private _resultFormatter?: (r: T, q: string) => string;
 
-    public get resultFormatter():(result:T, query:string) => string {
+    public get resultFormatter(): (result: T, query: string) => string {
         if (this._resultFormatter) {
             return this._resultFormatter;
         } else if (this.searchService.optionsLookup) {
             return r => this.readValue(r);
         } else {
-            return (r, q) => this.searchService.highlightMatches(this.readValue(r), q);
+            return (r, q) =>
+                this.searchService.highlightMatches(this.readValue(r), q);
         }
     }
 
     @Input()
-    public set resultFormatter(formatter:(result:T, query:string) => string) {
+    public set resultFormatter(
+        formatter: (result: T, query: string) => string
+    ) {
         this._resultFormatter = formatter;
     }
 
     @Input()
-    public resultTemplate:TemplateRef<IResultContext<T>>;
+    public resultTemplate: TemplateRef<IResultContext<T>>;
 
     @Input()
-    public retainSelectedResult:boolean;
+    public retainSelectedResult: boolean;
 
     @Input()
-    public set searchDelay(delay:number) {
+    public set searchDelay(delay: number) {
         this.searchService.searchDelay = delay;
     }
 
     @HostBinding("class.loading")
-    public get isSearching():boolean {
+    public get isSearching(): boolean {
         return this.searchService.isSearching;
     }
 
     @Input()
-    public maxResults:number;
+    public maxResults: number;
 
-    public get results():T[] {
+    public get results(): T[] {
         return this.searchService.results.slice(0, this.maxResults);
     }
 
     // Stores the currently selected result.
-    public selectedResult?:T;
+    public selectedResult?: T;
 
     // Emits whenever a new result is selected.
     @Output("resultSelected")
-    public onResultSelected:EventEmitter<T>;
+    public onResultSelected: EventEmitter<T>;
 
     @Input()
-    public transition:string;
+    public transition: string;
 
     @Input()
-    public transitionDuration:number;
+    public transitionDuration: number;
 
-    private _documentClickListener:() => void;
+    private _documentClickListener: () => void;
 
-    constructor(private _element:ElementRef, renderer:Renderer2, private _localizationService:SuiLocalizationService) {
+    constructor(
+        private _element: ElementRef,
+        renderer: Renderer2,
+        private _localizationService: SuiLocalizationService
+    ) {
         this.dropdownService = new DropdownService();
         this.searchService = new SearchService<T, T>();
 
         this.onLocaleUpdate();
-        this._localizationService.onLanguageUpdate.subscribe(() => this.onLocaleUpdate());
+        this._localizationService.onLanguageUpdate.subscribe(() =>
+            this.onLocaleUpdate()
+        );
 
         this._searchClasses = true;
         this.hasIcon = true;
@@ -202,19 +249,23 @@ export class SuiSearch<T> implements AfterViewInit, OnDestroy {
         this.transition = "scale";
         this.transitionDuration = 200;
 
-        this._documentClickListener = renderer.listen("document", "click", (e:MouseEvent) => this.onDocumentClick(e));
+        this._documentClickListener = renderer.listen(
+            "document",
+            "click",
+            (e: MouseEvent) => this.onDocumentClick(e)
+        );
     }
 
-    public ngAfterViewInit():void {
+    public ngAfterViewInit(): void {
         this._menu.service = this.dropdownService;
     }
 
-    private onLocaleUpdate():void {
+    private onLocaleUpdate(): void {
         this._localeValues = this._localizationService.get().search;
     }
 
     // Selects a result.
-    public select(result:T):void {
+    public select(result: T): void {
         this.onResultSelected.emit(result);
         this.dropdownService.setOpenState(false);
 
@@ -226,18 +277,18 @@ export class SuiSearch<T> implements AfterViewInit, OnDestroy {
         }
     }
 
-    public onClick(e:MouseEvent):void {
+    public onClick(e: MouseEvent): void {
         this.open();
     }
 
     @HostListener("focusin")
-    private onFocusIn():void {
+    private onFocusIn(): void {
         if (!this.dropdownService.isAnimating) {
             this.open();
         }
     }
 
-    private open():void {
+    private open(): void {
         if (this.searchService.query.length > 0) {
             // Only open on click when there is a query entered.
             this.dropdownService.setOpenState(true);
@@ -245,24 +296,27 @@ export class SuiSearch<T> implements AfterViewInit, OnDestroy {
     }
 
     @HostListener("focusout", ["$event"])
-    private onFocusOut(e:IFocusEvent):void {
+    private onFocusOut(e: IFocusEvent): void {
         if (!this._element.nativeElement.contains(e.relatedTarget)) {
             this.dropdownService.setOpenState(false);
         }
     }
 
-    public onDocumentClick(e:MouseEvent):void {
+    public onDocumentClick(e: MouseEvent): void {
         if (!this._element.nativeElement.contains(e.target)) {
             this.dropdownService.setOpenState(false);
         }
     }
 
     // Reads the specified field from an item.
-    public readValue(object:T):string {
-        return Util.Object.readValue<T, string>(object, this.searchService.optionsField);
+    public readValue(object: T): string {
+        return Util.Object.readValue<T, string>(
+            object,
+            this.searchService.optionsField
+        );
     }
 
-    public ngOnDestroy():void {
+    public ngOnDestroy(): void {
         this._documentClickListener();
     }
 }

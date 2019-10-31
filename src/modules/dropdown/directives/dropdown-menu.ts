@@ -1,10 +1,32 @@
 import {
-    Directive, ContentChild, forwardRef, Renderer2, ElementRef, AfterContentInit,
-    ContentChildren, QueryList, Input, HostListener, ChangeDetectorRef, OnDestroy
+    Directive,
+    ContentChild,
+    forwardRef,
+    Renderer2,
+    ElementRef,
+    AfterContentInit,
+    ContentChildren,
+    QueryList,
+    Input,
+    HostListener,
+    ChangeDetectorRef,
+    OnDestroy
 } from "@angular/core";
-import { Transition, SuiTransition, TransitionController, TransitionDirection } from "../../transition/index";
-import { HandledEvent, IAugmentedElement, KeyCode } from "../../../misc/util/index";
-import { DropdownService, DropdownAutoCloseType } from "../services/dropdown.service";
+import {
+    Transition,
+    SuiTransition,
+    TransitionController,
+    TransitionDirection
+} from "../../transition/index";
+import {
+    HandledEvent,
+    IAugmentedElement,
+    KeyCode
+} from "../../../misc/util/index";
+import {
+    DropdownService,
+    DropdownAutoCloseType
+} from "../services/dropdown.service";
 // Polyfill for IE
 import "element-closest";
 
@@ -13,44 +35,50 @@ import "element-closest";
     selector: ".item"
 })
 export class SuiDropdownMenuItem {
-    public get isDisabled():boolean {
+    public get isDisabled(): boolean {
         // We must use nativeElement as Angular doesn't have a way of reading class information.
         const element = this.element.nativeElement as Element;
         return element.classList.contains("disabled");
     }
 
-    private _isSelected:boolean;
+    private _isSelected: boolean;
 
-    public get isSelected():boolean {
+    public get isSelected(): boolean {
         return this._isSelected;
     }
 
-    public set isSelected(value:boolean) {
+    public set isSelected(value: boolean) {
         // Renderer is used to enable a dynamic class name.
         if (value) {
-            this._renderer.addClass(this.element.nativeElement, this.selectedClass);
+            this._renderer.addClass(
+                this.element.nativeElement,
+                this.selectedClass
+            );
         } else {
-            this._renderer.removeClass(this.element.nativeElement, this.selectedClass);
+            this._renderer.removeClass(
+                this.element.nativeElement,
+                this.selectedClass
+            );
         }
     }
 
     // Stores the class name used for a 'selected' item.
-    public selectedClass:string;
+    public selectedClass: string;
 
-    @ContentChild(forwardRef(() => SuiDropdownMenu))
-    public childDropdownMenu:SuiDropdownMenu;
+    @ContentChild(forwardRef(() => SuiDropdownMenu), { static: false })
+    public childDropdownMenu: SuiDropdownMenu;
 
-    public get hasChildDropdown():boolean {
+    public get hasChildDropdown(): boolean {
         return !!this.childDropdownMenu;
     }
 
-    constructor(private _renderer:Renderer2, public element:ElementRef) {
+    constructor(private _renderer: Renderer2, public element: ElementRef) {
         this.isSelected = false;
 
         this.selectedClass = "selected";
     }
 
-    public performClick():void {
+    public performClick(): void {
         // Using directly because Renderer2 doesn't have invokeElementMethod method anymore.
         this.element.nativeElement.click();
     }
@@ -59,25 +87,26 @@ export class SuiDropdownMenuItem {
 @Directive({
     selector: "[suiDropdownMenu]"
 })
-export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, OnDestroy {
-    private _service:DropdownService;
-    private _transitionController:TransitionController;
+export class SuiDropdownMenu extends SuiTransition
+    implements AfterContentInit, OnDestroy {
+    private _service: DropdownService;
+    private _transitionController: TransitionController;
 
     @Input()
-    public menuTransition:string;
+    public menuTransition: string;
 
     @Input()
-    public menuTransitionDuration:number;
+    public menuTransitionDuration: number;
 
-    public get service():DropdownService {
+    public get service(): DropdownService {
         return this._service;
     }
 
-    public set service(value:DropdownService) {
+    public set service(value: DropdownService) {
         this._service = value;
 
         let previousIsOpen = this._service.isOpen;
-        this._service.isOpenChange.subscribe((isOpen:boolean) => {
+        this._service.isOpenChange.subscribe((isOpen: boolean) => {
             if (isOpen !== previousIsOpen) {
                 // Only run transitions if the open state has changed.
                 this._transitionController.stopAll();
@@ -86,7 +115,9 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
                         this.menuTransition,
                         this.menuTransitionDuration,
                         TransitionDirection.Either,
-                        () => this._service.isAnimating = false));
+                        () => (this._service.isAnimating = false)
+                    )
+                );
             }
 
             if (!isOpen) {
@@ -101,37 +132,41 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
     }
 
     @ContentChildren(SuiDropdownMenuItem)
-    private _itemsQueryInternal:QueryList<SuiDropdownMenuItem>;
+    private _itemsQueryInternal: QueryList<SuiDropdownMenuItem>;
 
-    private _itemsQueryOverride:QueryList<SuiDropdownMenuItem>;
+    private _itemsQueryOverride: QueryList<SuiDropdownMenuItem>;
 
-    public set items(items:QueryList<SuiDropdownMenuItem>) {
+    public set items(items: QueryList<SuiDropdownMenuItem>) {
         this._itemsQueryOverride = items;
     }
 
-    private get _itemsQuery():QueryList<SuiDropdownMenuItem> {
+    private get _itemsQuery(): QueryList<SuiDropdownMenuItem> {
         return this._itemsQueryOverride || this._itemsQueryInternal;
     }
 
     // Get the list of items, ignoring those that are disabled.
-    private get _items():SuiDropdownMenuItem[] {
+    private get _items(): SuiDropdownMenuItem[] {
         return this._itemsQuery.filter(i => !i.isDisabled);
     }
 
     // Stack that keeps track of the currently selected item.
     // Selected items lower in the stack are necessarily the parent of the item one higher.
-    public selectedItems:SuiDropdownMenuItem[];
+    public selectedItems: SuiDropdownMenuItem[];
 
     // Sets whether or not to automatically select the 1st item when the dropdown is opened.
     @Input()
-    public menuAutoSelectFirst:boolean;
+    public menuAutoSelectFirst: boolean;
 
     @Input()
-    public menuSelectedItemClass:string;
+    public menuSelectedItemClass: string;
 
-    private _documentKeyDownListener:() => void;
+    private _documentKeyDownListener: () => void;
 
-    constructor(renderer:Renderer2, public element:ElementRef, changeDetector:ChangeDetectorRef) {
+    constructor(
+        renderer: Renderer2,
+        public element: ElementRef,
+        changeDetector: ChangeDetectorRef
+    ) {
         super(renderer, element, changeDetector);
 
         // Initialise transition functionality.
@@ -144,17 +179,28 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
         this.menuAutoSelectFirst = false;
         this.menuSelectedItemClass = "selected";
 
-        this._documentKeyDownListener = renderer.listen("document", "keydown", (e:KeyboardEvent) => this.onDocumentKeyDown(e));
+        this._documentKeyDownListener = renderer.listen(
+            "document",
+            "keydown",
+            (e: KeyboardEvent) => this.onDocumentKeyDown(e)
+        );
     }
 
     @HostListener("click", ["$event"])
-    public onClick(e:HandledEvent & MouseEvent):void {
+    public onClick(e: HandledEvent & MouseEvent): void {
         if (!e.eventHandled) {
             e.eventHandled = true;
 
-            if (this._service.autoCloseMode === DropdownAutoCloseType.ItemClick) {
+            if (
+                this._service.autoCloseMode === DropdownAutoCloseType.ItemClick
+            ) {
                 const target = e.target as IAugmentedElement;
-                if (this.element.nativeElement.contains(target.closest(".item")) && !/input|textarea/i.test(target.tagName)) {
+                if (
+                    this.element.nativeElement.contains(
+                        target.closest(".item")
+                    ) &&
+                    !/input|textarea/i.test(target.tagName)
+                ) {
                     // Once an item is selected, we can close the entire dropdown.
                     this._service.setOpenState(false, true);
                 }
@@ -162,20 +208,29 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
         }
     }
 
-    public onDocumentKeyDown(e:KeyboardEvent):void {
+    public onDocumentKeyDown(e: KeyboardEvent): void {
         // Only the root dropdown (i.e. not nested dropdowns) is responsible for keeping track of the currently selected item.
         if (this._service.isOpen && !this._service.isNested) {
             // Stop document events like scrolling while open.
             const target = e.target as Element;
-            if (!/input/i.test(target.tagName) &&
-                [KeyCode.Escape, KeyCode.Enter, KeyCode.Up, KeyCode.Down, KeyCode.Left, KeyCode.Right].find(kC => kC === e.keyCode)) {
+            if (
+                !/input/i.test(target.tagName) &&
+                [
+                    KeyCode.Escape,
+                    KeyCode.Enter,
+                    KeyCode.Up,
+                    KeyCode.Down,
+                    KeyCode.Left,
+                    KeyCode.Right
+                ].find(kC => kC === e.keyCode)
+            ) {
                 e.preventDefault();
             }
 
             // Gets the top selected item from the stack.
             const [selected] = this.selectedItems.slice(-1);
             // Keeping track of the menu containing the currently selected element allows us to easily determine its siblings.
-            let selectedContainer:SuiDropdownMenu = this;
+            let selectedContainer: SuiDropdownMenu = this;
             if (this.selectedItems.length >= 2) {
                 const [selectedParent] = this.selectedItems.slice(-2);
                 selectedContainer = selectedParent.childDropdownMenu;
@@ -192,7 +247,9 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
                 // Up : select the next item above the current one, or the 1st if none selected.
                 case KeyCode.Up: {
                     this.selectedItems.pop();
-                    this.selectedItems.push(selectedContainer.updateSelection(selected, e.keyCode));
+                    this.selectedItems.push(
+                        selectedContainer.updateSelection(selected, e.keyCode)
+                    );
                     // Prevent default regardless of whether we are in an input, to stop jumping to the start or end of the query string.
                     e.preventDefault();
                     break;
@@ -204,13 +261,18 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
                         break;
                     }
                 }
-                    // falls through
+                // falls through
                 // Right : if the selected item contains a nested dropdown, open the dropdown & select the 1st item.
                 case KeyCode.Right: {
                     if (selected && selected.hasChildDropdown) {
                         selected.childDropdownMenu.service.setOpenState(true);
 
-                        this.selectedItems.push(selected.childDropdownMenu.updateSelection(selected, e.keyCode));
+                        this.selectedItems.push(
+                            selected.childDropdownMenu.updateSelection(
+                                selected,
+                                e.keyCode
+                            )
+                        );
                     }
                     break;
                 }
@@ -220,7 +282,9 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
                         this.selectedItems.pop();
                         const [selectedParent] = this.selectedItems.slice(-1);
 
-                        selectedParent.childDropdownMenu.service.setOpenState(false);
+                        selectedParent.childDropdownMenu.service.setOpenState(
+                            false
+                        );
                         selectedParent.isSelected = true;
                     }
                     break;
@@ -229,7 +293,7 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
         }
     }
 
-    public resetSelection():void {
+    public resetSelection(): void {
         this.selectedItems = [];
         this._items.forEach(i => {
             i.selectedClass = this.menuSelectedItemClass;
@@ -245,16 +309,18 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
     }
 
     // Determines the item to next be selected, based on the keyboard input & the currently selected item.
-    public updateSelection(selectedItem:SuiDropdownMenuItem, keyCode:KeyCode):SuiDropdownMenuItem {
+    public updateSelection(
+        selectedItem: SuiDropdownMenuItem,
+        keyCode: KeyCode
+    ): SuiDropdownMenuItem {
         if (selectedItem) {
             // Remove the selected status on the previously selected item.
             selectedItem.isSelected = false;
         }
 
-        let selectedIndex = this._items
-            .findIndex(i => i === selectedItem);
+        let selectedIndex = this._items.findIndex(i => i === selectedItem);
 
-        let newSelection:SuiDropdownMenuItem;
+        let newSelection: SuiDropdownMenuItem;
 
         switch (keyCode) {
             case KeyCode.Enter:
@@ -287,9 +353,9 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
         return newSelection;
     }
 
-    public scrollToItem(item:SuiDropdownMenuItem):void {
-        const menu:Element = this.element.nativeElement;
-        const selectedRect:ClientRect = item.element.nativeElement.getBoundingClientRect();
+    public scrollToItem(item: SuiDropdownMenuItem): void {
+        const menu: Element = this.element.nativeElement;
+        const selectedRect: ClientRect = item.element.nativeElement.getBoundingClientRect();
 
         const menuRect = menu.getBoundingClientRect();
 
@@ -306,17 +372,17 @@ export class SuiDropdownMenu extends SuiTransition implements AfterContentInit, 
         menu.scrollTop += Math.round(scrollAmount);
     }
 
-    public ngAfterContentInit():void {
+    public ngAfterContentInit(): void {
         this.onItemsChanged();
         this._itemsQuery.changes.subscribe(() => this.onItemsChanged());
     }
 
-    private onItemsChanged():void {
+    private onItemsChanged(): void {
         // We use `_items` rather than `items` in case one or more have become disabled.
         this.resetSelection();
     }
 
-    public ngOnDestroy():void {
+    public ngOnDestroy(): void {
         this._documentKeyDownListener();
     }
 }

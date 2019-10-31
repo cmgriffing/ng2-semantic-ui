@@ -39,15 +39,10 @@
     "prepublishOnly": "npm run build",
     "test": "ng test",
     "test:cov": "ng test --code-coverage true",
-    "test:w": "ng test --single-run false --browsers Chrome --reporters kjhtml"
+    "test:w": "ng test --single-run false --browsers Chrome --reporters kjhtml",
+    "rxjs-migrate": "rxjs-5-to-6-migrate -p src/tsconfig.app.json"
   },
-  "peerDependencies": {
-    "@angular/common": ">= 5.0.0",
-    "@angular/compiler": ">= 5.0.0",
-    "@angular/core": ">= 5.0.0",
-    "@angular/forms": ">= 5.0.0",
-    "typescript": "^2.3.0"
-  },
+  "peerDependencies": {},
   "dependencies": {
     "bowser": "^1.7.2",
     "date-fns": "2.0.0-alpha.1",
@@ -55,23 +50,25 @@
     "extend": "^3.0.1",
     "is-ua-webview": "^1.0.0",
     "popper.js": "^1.14.0",
-    "rxjs": "^5.0.1"
+    "rxjs": "^6.5.3",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@angular/cli": "^1.7.3",
-    "@angular/common": "^5.2.9",
-    "@angular/compiler": "^5.2.9",
-    "@angular/compiler-cli": "^5.2.9",
-    "@angular/core": "^5.2.9",
-    "@angular/forms": "^5.2.9",
-    "@angular/http": "^5.2.9",
-    "@angular/platform-browser": "^5.2.9",
-    "@angular/platform-browser-dynamic": "^5.2.9",
-    "@angular/router": "^5.2.9",
+    "@angular-devkit/build-angular": "~0.803.16",
+    "@angular/cli": "^8.3.16",
+    "@angular/common": "^6.1.10",
+    "@angular/compiler": "^6.1.10",
+    "@angular/compiler-cli": "^6.1.10",
+    "@angular/core": "^6.1.10",
+    "@angular/forms": "^6.1.10",
+    "@angular/platform-browser": "^6.1.10",
+    "@angular/platform-browser-dynamic": "^6.1.10",
+    "@angular/router": "^6.1.10",
     "@edcarroll/code-style": "^2.0.0",
     "@types/extend": "^3.0.0",
     "@types/jasmine": "^2.5.53",
     "@types/prismjs": "~1.4.18",
+    "codelyzer": "^5.0.1",
     "core-js": "^2.5.3",
     "fs-extra": "^5.0.0",
     "jasmine-core": "~2.5.2",
@@ -91,9 +88,10 @@
     "rollup-plugin-commonjs": "~7.0.0",
     "rollup-plugin-node-resolve": "~2.0.0",
     "rollup-plugin-uglify": "~1.0.1",
+    "rxjs-tslint": "^0.1.7",
     "ts-node": "^5.0.1",
-    "typescript": "^2.6.2",
-    "web-animations-js": "^2.3.1",
-    "zone.js": "^0.8.20"
+    "typescript": "^2.9.2",
+    "web-animations-js": "^2.3.2",
+    "zone.js": "~0.9.1"
   }
 }

@@ -2,15 +2,16 @@
   "compilerOptions": {
     "baseUrl": "",
     "declaration": false,
+    "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom"],
     "mapRoot": "./",
-    "module": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "outDir": "./demo/dist/out-tsc",
     "sourceMap": true,
-    "target": "es5",
+    "target": "es2015",
     "paths": {
       "ng2-semantic-ui": ["./src/public"],
       "ng2-semantic-ui/locales": ["./src/behaviors/localization/locales"]

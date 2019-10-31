@@ -75,7 +75,7 @@ export class SuiSelect<T, U> extends SuiSelectBase<T, U>
 
     @ViewChild("optionTemplateSibling", {
         read: ViewContainerRef,
-        static: false
+        static: true
     })
     private _optionTemplateSibling: ViewContainerRef;
 

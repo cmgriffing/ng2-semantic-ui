@@ -44,7 +44,7 @@ export abstract class SuiSelectBase<T, U>
     public dropdownService: DropdownService;
     public searchService: SearchService<T, U>;
 
-    @ViewChild(SuiDropdownMenu, { static: false })
+    @ViewChild(SuiDropdownMenu, { static: true })
     protected _menu: SuiDropdownMenu;
 
     // Keep track of all of the rendered select options. (Rendered by the user using *ngFor).
@@ -84,10 +84,10 @@ export abstract class SuiSelectBase<T, U>
         return this.searchService.isSearching;
     }
 
-    @ViewChild(SuiSelectSearch, { static: false })
+    @ViewChild(SuiSelectSearch, { static: true })
     private _internalSearch?: SuiSelectSearch;
 
-    @ContentChild(SuiSelectSearch, { static: false })
+    @ContentChild(SuiSelectSearch, { static: true })
     private _manualSearch?: SuiSelectSearch;
 
     public get searchInput(): SuiSelectSearch | undefined {

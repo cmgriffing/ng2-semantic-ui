@@ -65,7 +65,7 @@ export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
         return this.isDisabled ? "disabled" : undefined;
     }
 
-    @ViewChild("checkbox", { static: false })
+    @ViewChild("checkbox", { static: true })
     private _checkboxElement: ElementRef;
 
     constructor() {

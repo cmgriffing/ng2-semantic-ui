@@ -100,7 +100,7 @@ export class SuiPopup implements IPopup {
     }
 
     // `ElementRef` for the positioning subject.
-    @ViewChild("container", { read: ViewContainerRef, static: false })
+    @ViewChild("container", { read: ViewContainerRef, static: true })
     private _container: ViewContainerRef;
 
     public set anchor(anchor: ElementRef) {
@@ -145,7 +145,7 @@ export class SuiPopup implements IPopup {
     }
 
     // `ViewContainerRef` for the element the template gets injected as a sibling of.
-    @ViewChild("templateSibling", { read: ViewContainerRef, static: false })
+    @ViewChild("templateSibling", { read: ViewContainerRef, static: true })
     public templateSibling: ViewContainerRef;
 
     @HostBinding("attr.tabindex")

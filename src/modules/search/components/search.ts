@@ -87,7 +87,7 @@ export class SuiSearch<T> implements AfterViewInit, OnDestroy {
     public dropdownService: DropdownService;
     public searchService: SearchService<T, T>;
 
-    @ViewChild(SuiDropdownMenu, { static: false })
+    @ViewChild(SuiDropdownMenu, { static: true })
     private _menu: SuiDropdownMenu;
 
     // Sets the Semantic UI classes on the host element.

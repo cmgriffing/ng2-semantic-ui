@@ -24,7 +24,7 @@ import { SuiDropdownMenu } from "./dropdown-menu";
 export class SuiDropdown implements AfterContentInit {
     public service: DropdownService;
 
-    @ContentChild(SuiDropdownMenu, { static: false })
+    @ContentChild(SuiDropdownMenu, { static: true })
     private _menu: SuiDropdownMenu;
 
     @ContentChildren(SuiDropdown, { descendants: true })
@@ -92,7 +92,9 @@ export class SuiDropdown implements AfterContentInit {
         this.service.autoCloseMode = value;
     }
 
-    constructor(private _element: ElementRef) {
+    constructor(private _element: ElementRef) {}
+
+    ngOnInit() {
         this.service = new DropdownService();
         this.service.isOpenChange.subscribe(() => {
             if (this.service.isOpen) {

@@ -68,7 +68,7 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     @Input()
     public isReadonly: boolean;
 
-    @ViewChild("radio", { static: false })
+    @ViewChild("radio", { static: true })
     private _radioElement: ElementRef;
 
     public get checkedAttribute(): string | undefined {

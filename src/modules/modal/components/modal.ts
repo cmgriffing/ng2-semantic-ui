@@ -108,7 +108,7 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
     @Output("dismissed")
     public onDismiss: EventEmitter<void>;
 
-    @ViewChild("modal", { static: false })
+    @ViewChild("modal", { static: true })
     private _modalElement: ElementRef;
 
     // Size used to display the modal.
@@ -177,7 +177,7 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
     private _isClosing: boolean;
 
     // `ViewContainerRef` for the element the template gets injected as a sibling of.
-    @ViewChild("templateSibling", { read: ViewContainerRef, static: false })
+    @ViewChild("templateSibling", { read: ViewContainerRef, static: true })
     public templateSibling: ViewContainerRef;
 
     // Parent element of modal before relocation to document body.

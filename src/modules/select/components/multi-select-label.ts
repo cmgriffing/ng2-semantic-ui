@@ -75,7 +75,7 @@ export class SuiMultiSelectLabel<T> extends SuiTransition {
     }
 
     // Placeholder to draw template beside.
-    @ViewChild("templateSibling", { read: ViewContainerRef, static: false })
+    @ViewChild("templateSibling", { read: ViewContainerRef, static: true })
     public templateSibling: ViewContainerRef;
 
     constructor(

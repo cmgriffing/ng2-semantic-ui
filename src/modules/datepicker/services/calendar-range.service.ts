@@ -1,7 +1,8 @@
-import { DatePrecision, DateUtil, Util } from "../../../misc/util/index";
 import { CalendarItem } from "../directives/calendar-item";
 import { CalendarService } from "./calendar.service";
 import { DateComparer } from "../classes/date-comparer";
+import { DatePrecision, DateUtil } from "../../../misc/util/helpers/date";
+import { Util } from "../../../misc/util/helpers/util";
 
 export class CalendarRange {
     public start:Date;
@@ -13,7 +14,13 @@ export class CalendarRange {
     public groupedItems:CalendarItem[][];
     private _comparer:DateComparer;
 
-    constructor(start:Date, dates:Date[], items:CalendarItem[], grouped:CalendarItem[][], comparer:DateComparer) {
+    constructor(
+        start:Date,
+        dates:Date[],
+        items:CalendarItem[],
+        grouped:CalendarItem[][],
+        comparer:DateComparer
+    ) {
         this.start = start;
         this.dates = dates;
         this.items = items;
@@ -29,7 +36,9 @@ export class CalendarRange {
         if (!item) {
             return -1;
         }
-        return this.items.findIndex(i => this._comparer.equal(i.date, item.date));
+        return this.items.findIndex(i =>
+            this._comparer.equal(i.date, item.date)
+        );
     }
 
     public containsDate(date:Date):boolean {
@@ -75,7 +84,7 @@ export abstract class CalendarRangeService {
 
     constructor(interval:DatePrecision, rows:number, columns:number) {
         this.interval = interval;
-        this.marginal = interval as number + 1;
+        this.marginal = (interval as number) + 1;
         this.rows = rows;
         this.columns = columns;
     }
@@ -89,8 +98,18 @@ export abstract class CalendarRangeService {
     public refresh():void {
         this.current = this.calcRange(this.service.currentDate);
 
-        this.next = this.calcRange(DateUtil.next(this.interval, DateUtil.clone(this.service.currentDate)));
-        this.previous = this.calcRange(DateUtil.previous(this.interval, DateUtil.clone(this.service.currentDate)));
+        this.next = this.calcRange(
+            DateUtil.next(
+                this.interval,
+                DateUtil.clone(this.service.currentDate)
+            )
+        );
+        this.previous = this.calcRange(
+            DateUtil.previous(
+                this.interval,
+                DateUtil.clone(this.service.currentDate)
+            )
+        );
     }
 
     public move(forwards:boolean):void {
@@ -104,14 +123,24 @@ export abstract class CalendarRangeService {
         DateUtil.next(this.interval, this.service.currentDate);
         this.previous = this.current;
         this.current = this.next;
-        this.next = this.calcRange(DateUtil.next(this.interval, DateUtil.clone(this.service.currentDate)));
+        this.next = this.calcRange(
+            DateUtil.next(
+                this.interval,
+                DateUtil.clone(this.service.currentDate)
+            )
+        );
     }
 
     public movePrevious():void {
         DateUtil.previous(this.interval, this.service.currentDate);
         this.next = this.current;
         this.current = this.previous;
-        this.previous = this.calcRange(DateUtil.previous(this.interval, DateUtil.clone(this.service.currentDate)));
+        this.previous = this.calcRange(
+            DateUtil.previous(
+                this.interval,
+                DateUtil.clone(this.service.currentDate)
+            )
+        );
     }
 
     public calc(forwards:boolean):CalendarRange {
@@ -129,7 +158,13 @@ export abstract class CalendarRangeService {
         const dates = this.calcDates(start);
         const items = this.calcItems(dates, startDate);
 
-        return new CalendarRange(start, dates, items, Util.Array.group(items, this.columns), this.dateComparer);
+        return new CalendarRange(
+            start,
+            dates,
+            items,
+            Util.Array.group(items, this.columns),
+            this.dateComparer
+        );
     }
 
     protected calcStart(date:Date):Date {
@@ -137,18 +172,24 @@ export abstract class CalendarRangeService {
     }
 
     protected calcDates(rangeStart:Date):Date[] {
-        return Util.Array
-            .range(this.length)
-            .map(i => DateUtil.add(this.marginal, DateUtil.clone(rangeStart), i));
-
+        return Util.Array.range(this.length).map(i =>
+            DateUtil.add(this.marginal, DateUtil.clone(rangeStart), i)
+        );
     }
 
     protected calcItems(dateRange:Date[], baseDate:Date):CalendarItem[] {
         return dateRange.map(date => {
             const item = new CalendarItem(date);
 
-            item.isDisabled = !this.dateComparer.between(item.date, this.service.minDate, this.service.maxDate);
-            item.isActive = this.dateComparer.equal(item.date, this.service.selectedDate);
+            item.isDisabled = !this.dateComparer.between(
+                item.date,
+                this.service.minDate,
+                this.service.maxDate
+            );
+            item.isActive = this.dateComparer.equal(
+                item.date,
+                this.service.selectedDate
+            );
             item.isToday = this.dateComparer.equal(item.date, new Date());
             item.isSelectable = item.isDisabled;
 

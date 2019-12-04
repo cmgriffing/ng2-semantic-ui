@@ -1,9 +1,23 @@
-import { Component, HostBinding, Input, Output, Renderer2, ElementRef, EventEmitter } from "@angular/core";
-import { SidebarService, SidebarTransition, SidebarDirection } from "../services/sidebar.service";
+import {
+    Component,
+    HostBinding,
+    Input,
+    Output,
+    Renderer2,
+    ElementRef,
+    EventEmitter
+} from "@angular/core";
+import {
+    SidebarService,
+    SidebarTransition,
+    SidebarDirection
+} from "../services/sidebar.service";
 
 @Component({
     selector: "sui-sidebar",
-    template: `<ng-content></ng-content>`
+    template: `
+        <ng-content></ng-content>
+    `
 })
 export class SuiSidebar {
     public service:SidebarService;
@@ -11,7 +25,7 @@ export class SuiSidebar {
     @HostBinding("class.ui")
     @HostBinding("class.sidebar")
     @HostBinding("class.menu")
-    private _sidebarClasses:boolean;
+    public sidebarClasses:boolean;
 
     @Input()
     public get transition():SidebarTransition {
@@ -19,7 +33,9 @@ export class SuiSidebar {
     }
 
     public set transition(transition:SidebarTransition) {
-        this.service.transition.split(" ").forEach(c => this.setClass(c, false));
+        this.service.transition
+            .split(" ")
+            .forEach(c => this.setClass(c, false));
 
         this.service.transition = transition;
 
@@ -59,7 +75,7 @@ export class SuiSidebar {
         return this.service.isAnimating;
     }
 
-    constructor(private _renderer:Renderer2, private _element:ElementRef) {
+    constructor(protected _renderer:Renderer2, private _element:ElementRef) {
         this.service = new SidebarService();
         // We set the default here as well to force the classes to update.
         this.transition = SidebarTransition.Uncover;
@@ -68,7 +84,7 @@ export class SuiSidebar {
         setTimeout(() => this.updateDimensions());
         this.service.isVisibleChange.subscribe(() => this.updateDimensions());
 
-        this._sidebarClasses = true;
+        this.sidebarClasses = true;
     }
 
     private updateDimensions():void {

@@ -1,14 +1,25 @@
-import { Component, Input, HostBinding, HostListener, ElementRef, Renderer2 } from "@angular/core";
+import {
+    Component,
+    Input,
+    HostBinding,
+    HostListener,
+    ElementRef,
+    Renderer2
+} from "@angular/core";
 import { SidebarService, SidebarTransition } from "../services/sidebar.service";
 
 @Component({
     selector: "sui-sidebar-sibling",
-    template: `<ng-content></ng-content>`,
-    styles: [`
-:host {
-    display: block;
-}
-`]
+    template: `
+        <ng-content></ng-content>
+    `,
+    styles: [
+        `
+            :host {
+                display: block;
+            }
+        `
+    ]
 })
 export class SuiSidebarSibling {
     private _service:SidebarService;
@@ -44,25 +55,37 @@ export class SuiSidebarSibling {
     }
 
     @HostBinding("class.pusher")
-    private _siblingClasses:boolean;
+    public siblingClasses:boolean;
 
-    constructor(private _renderer:Renderer2, private _element:ElementRef) {
+    constructor(protected _renderer:Renderer2, private _element:ElementRef) {
         this.isDimmedWhenVisible = false;
 
-        this._siblingClasses = true;
+        this.siblingClasses = true;
     }
 
     private updateTransform():void {
         this._renderer.removeStyle(this._element.nativeElement, "transform");
-        this._renderer.removeStyle(this._element.nativeElement, "-webkit-transform");
+        this._renderer.removeStyle(
+            this._element.nativeElement,
+            "-webkit-transform"
+        );
 
-        if (this.service.isVisible &&
+        if (
+            this.service.isVisible &&
             this.service.transition !== SidebarTransition.Overlay &&
-            this.service.transition !== SidebarTransition.ScaleDown) {
-
+            this.service.transition !== SidebarTransition.ScaleDown
+        ) {
             const translate = `translate3d(${this.service.width}px, ${this.service.height}px, 0)`;
-            this._renderer.setStyle(this._element.nativeElement, "transform", translate);
-            this._renderer.setStyle(this._element.nativeElement, "-webkit-transform", translate);
+            this._renderer.setStyle(
+                this._element.nativeElement,
+                "transform",
+                translate
+            );
+            this._renderer.setStyle(
+                this._element.nativeElement,
+                "-webkit-transform",
+                translate
+            );
         }
     }
 

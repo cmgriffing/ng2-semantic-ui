@@ -12,14 +12,16 @@ import {
     ChangeDetectorRef,
     TemplateRef
 } from "@angular/core";
+
+import { IOptionContext } from "../classes/select-base";
+import { SuiTransition } from "../../../modules/transition/directives/transition";
+import { TransitionController } from "../../../modules/transition/classes/transition-controller";
 import {
-    SuiTransition,
-    TransitionController,
     Transition,
     TransitionDirection
-} from "../../transition/index";
-import { HandledEvent, SuiComponentFactory } from "../../../misc/util/index";
-import { IOptionContext } from "../classes/select-base";
+} from "../../../modules/transition/classes/transition";
+import { SuiComponentFactory } from "../../../misc/util/services/component-factory.service";
+import { HandledEvent } from "../../../misc/util/helpers/util";
 
 // See https://github.com/Microsoft/TypeScript/issues/13449.
 const templateRef = TemplateRef;
@@ -37,33 +39,33 @@ export class SuiMultiSelectLabel<T> extends SuiTransition {
     // Doing it on the host enables use in menus etc.
     @HostBinding("class.ui")
     @HostBinding("class.label")
-    private _labelClasses: boolean;
+    public labelClasses:boolean;
 
-    private _transitionController: TransitionController;
-
-    @Input()
-    public value: T;
+    private _transitionController:TransitionController;
 
     @Input()
-    public query?: string;
+    public value:T;
+
+    @Input()
+    public query?:string;
 
     @Output("deselected")
-    public onDeselected: EventEmitter<T>;
+    public onDeselected:EventEmitter<T>;
 
     @Input()
-    public formatter: (obj: T) => string;
+    public formatter:(obj:T) => string;
 
-    private _template?: TemplateRef<IOptionContext<T>>;
+    private _template?:TemplateRef<IOptionContext<T>>;
 
     @Input()
-    public get template(): TemplateRef<IOptionContext<T>> | undefined {
+    public get template():TemplateRef<IOptionContext<T>> | undefined {
         return this._template;
     }
 
-    public set template(template: TemplateRef<IOptionContext<T>> | undefined) {
+    public set template(template:TemplateRef<IOptionContext<T>> | undefined) {
         this._template = template;
         if (this.template) {
-            this.componentFactory.createView(
+            this._componentFactory.createView(
                 this.templateSibling,
                 this.template,
                 {
@@ -76,15 +78,15 @@ export class SuiMultiSelectLabel<T> extends SuiTransition {
 
     // Placeholder to draw template beside.
     @ViewChild("templateSibling", { read: ViewContainerRef, static: true })
-    public templateSibling: ViewContainerRef;
+    public templateSibling:ViewContainerRef;
 
     constructor(
-        renderer: Renderer2,
-        element: ElementRef,
-        changeDetector: ChangeDetectorRef,
-        public componentFactory: SuiComponentFactory
+        protected _renderer:Renderer2,
+        public element:ElementRef,
+        protected _changeDetector:ChangeDetectorRef,
+        protected _componentFactory:SuiComponentFactory
     ) {
-        super(renderer, element, changeDetector);
+        super(_renderer, element, _changeDetector);
 
         // Initialise transition functionality.
         this._transitionController = new TransitionController(
@@ -95,14 +97,14 @@ export class SuiMultiSelectLabel<T> extends SuiTransition {
 
         this.onDeselected = new EventEmitter<T>();
 
-        this._labelClasses = true;
+        this.labelClasses = true;
 
         this._transitionController.animate(
             new Transition("scale", 100, TransitionDirection.In)
         );
     }
 
-    public deselectOption(e: HandledEvent): void {
+    public deselectOption(e:HandledEvent):void {
         e.eventHandled = true;
 
         this._transitionController.animate(
@@ -113,7 +115,7 @@ export class SuiMultiSelectLabel<T> extends SuiTransition {
     }
 
     @HostListener("click", ["$event"])
-    public onClick(e: HandledEvent): void {
+    public onClick(e:HandledEvent):void {
         e.eventHandled = true;
     }
 }

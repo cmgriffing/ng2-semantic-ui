@@ -8,11 +8,8 @@ import {
     Input,
     TemplateRef
 } from "@angular/core";
-import {
-    ITemplateRefContext,
-    SuiComponentFactory
-} from "../../../misc/util/index";
 import { IResultContext } from "./search";
+import { SuiComponentFactory } from "../../../misc/util/services/component-factory.service";
 
 // See https://github.com/Microsoft/TypeScript/issues/13449.
 const templateRef = TemplateRef;
@@ -27,26 +24,26 @@ const templateRef = TemplateRef;
 export class SuiSearchResult<T> {
     // Sets the Semantic UI classes on the host element.
     @HostBinding("class.result")
-    private _optionClasses: boolean;
+    public optionClasses:boolean;
 
     @Input()
-    public value: T;
+    public value:T;
 
     @Input()
-    public query: string;
+    public query:string;
 
     // Returns the label from a given value.
     @Input()
-    public formatter: (obj: T, query: string) => string;
+    public formatter:(obj:T, query:string) => string;
 
-    private _template?: TemplateRef<IResultContext<T>>;
+    private _template?:TemplateRef<IResultContext<T>>;
 
     @Input()
-    public get template(): TemplateRef<IResultContext<T>> | undefined {
+    public get template():TemplateRef<IResultContext<T>> | undefined {
         return this._template;
     }
 
-    public set template(template: TemplateRef<IResultContext<T>> | undefined) {
+    public set template(template:TemplateRef<IResultContext<T>> | undefined) {
         this._template = template;
         if (this.template) {
             this.componentFactory.createView(
@@ -62,10 +59,10 @@ export class SuiSearchResult<T> {
 
     // Placeholder to draw template beside.
     @ViewChild("templateSibling", { read: ViewContainerRef, static: true })
-    public templateSibling: ViewContainerRef;
+    public templateSibling:ViewContainerRef;
 
-    constructor(public componentFactory: SuiComponentFactory) {
-        this._optionClasses = true;
+    constructor(public componentFactory:SuiComponentFactory) {
+        this.optionClasses = true;
 
         // By default we make this function return an empty string, for the brief moment when it isn't displaying the correct label.
         this.formatter = value => "";

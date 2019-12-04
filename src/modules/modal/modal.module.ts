@@ -1,10 +1,10 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { SuiDimmerModule } from "../dimmer/index";
-import { SuiTransitionModule } from "../transition/index";
-import { SuiUtilityModule } from "../../misc/util/index";
 import { SuiModalService } from "./services/modal.service";
 import { SuiModal } from "./components/modal";
+import { SuiDimmerModule } from "../../modules/dimmer/dimmer.module";
+import { SuiTransitionModule } from "../../modules/transition/transition.module";
+import { SuiUtilityModule } from "../../misc/util/util.module";
 
 @NgModule({
     imports: [
@@ -13,17 +13,9 @@ import { SuiModal } from "./components/modal";
         SuiTransitionModule,
         SuiUtilityModule
     ],
-    declarations: [
-        SuiModal
-    ],
-    exports: [
-        SuiModal
-    ],
-    providers: [
-        SuiModalService
-    ],
-    entryComponents: [
-        SuiModal
-    ]
+    declarations: [SuiModal],
+    exports: [SuiModal],
+    providers: [SuiModalService],
+    entryComponents: [SuiModal]
 })
 export class SuiModalModule {}

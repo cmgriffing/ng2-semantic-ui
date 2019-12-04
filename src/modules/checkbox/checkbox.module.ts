@@ -6,10 +6,7 @@ import { SuiRadio, SuiRadioValueAccessor } from "./components/radio";
 import { SuiRadioManager } from "./directives/radio-manager";
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule
-    ],
+    imports: [CommonModule, FormsModule],
     declarations: [
         SuiCheckbox,
         SuiCheckboxValueAccessor,

@@ -1,9 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { SuiPopupModule } from "../popup/index";
-import { SuiLocalizationModule } from "../../behaviors/localization/index";
-import { SuiUtilityModule } from "../../misc/util/index";
 import { SuiCalendarViewTitle } from "./components/calendar-view-title";
 import { SuiCalendarYearView } from "./views/year-view";
 import { SuiCalendarMonthView } from "./views/month-view";
@@ -14,9 +11,13 @@ import { SuiCalendarHourView } from "./views/hour-view";
 import { SuiCalendarMinuteView } from "./views/minute-view";
 import { SuiDatepickerInputDirective } from "./directives/input.directive";
 import {
-    SuiDatepickerDirective, SuiDatepickerDirectiveValueAccessor,
+    SuiDatepickerDirective,
+    SuiDatepickerDirectiveValueAccessor,
     SuiDatepickerDirectiveValidator
 } from "./directives/datepicker.directive";
+import { SuiPopupModule } from "../../modules/popup/popup.module";
+import { SuiLocalizationModule } from "../../behaviors/localization/localization.module";
+import { SuiUtilityModule } from "../../misc/util/util.module";
 
 @NgModule({
     imports: [
@@ -48,8 +49,6 @@ import {
         SuiDatepickerDirectiveValidator,
         SuiDatepickerInputDirective
     ],
-    entryComponents: [
-        SuiDatepicker
-    ]
+    entryComponents: [SuiDatepicker]
 })
 export class SuiDatepickerModule {}

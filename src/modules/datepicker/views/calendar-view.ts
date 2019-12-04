@@ -1,8 +1,16 @@
-import { Input, QueryList, ViewChildren, AfterViewInit, HostListener, Renderer2, OnDestroy } from "@angular/core";
-import { KeyCode } from "../../../misc/util/index";
+import {
+    Input,
+    QueryList,
+    ViewChildren,
+    AfterViewInit,
+    HostListener,
+    Renderer2,
+    OnDestroy
+} from "@angular/core";
 import { CalendarItem, SuiCalendarItem } from "../directives/calendar-item";
 import { CalendarService } from "../services/calendar.service";
 import { CalendarRangeService } from "../services/calendar-range.service";
+import { KeyCode } from "../../../misc/util/helpers/util";
 
 export enum CalendarViewType {
     Year = 0,
@@ -50,11 +58,19 @@ export abstract class CalendarView implements AfterViewInit, OnDestroy {
 
     private _documentKeyDownListener:() => void;
 
-    constructor(renderer:Renderer2, viewType:CalendarViewType, ranges:CalendarRangeService) {
+    constructor(
+        protected _renderer:Renderer2,
+        viewType:CalendarViewType,
+        ranges:CalendarRangeService
+    ) {
         this._type = viewType;
         this.ranges = ranges;
 
-        this._documentKeyDownListener = renderer.listen("document", "keydown", (e:KeyboardEvent) => this.onDocumentKeyDown(e));
+        this._documentKeyDownListener = _renderer.listen(
+            "document",
+            "keydown",
+            (e:KeyboardEvent) => this.onDocumentKeyDown(e)
+        );
     }
 
     // Template Methods
@@ -70,7 +86,9 @@ export abstract class CalendarView implements AfterViewInit, OnDestroy {
     // Keyboard Control
 
     public ngAfterViewInit():void {
-        this._renderedItems.changes.subscribe(() => this.onRenderedItemsChanged());
+        this._renderedItems.changes.subscribe(() =>
+            this.onRenderedItemsChanged()
+        );
         this.onRenderedItemsChanged();
     }
 
@@ -80,19 +98,29 @@ export abstract class CalendarView implements AfterViewInit, OnDestroy {
                 if (hasFocus) {
                     this.highlightItem(i.item);
                 }
-            }));
+            })
+        );
 
         this.autoHighlight();
         this.highlightItem(this._highlightedItem);
     }
 
     private autoHighlight():void {
-        let date = this.selectedDate && this.ranges.current.containsDate(this.selectedDate) ? this.selectedDate : this.currentDate;
-        if (this._highlightedItem && this.ranges.current.containsDate(this._highlightedItem.date)) {
+        let date =
+            this.selectedDate &&
+            this.ranges.current.containsDate(this.selectedDate)
+                ? this.selectedDate
+                : this.currentDate;
+        if (
+            this._highlightedItem &&
+            this.ranges.current.containsDate(this._highlightedItem.date)
+        ) {
             date = this._highlightedItem.date;
         }
 
-        const initiallyHighlighted = this.ranges.current.items.find(i => this.ranges.dateComparer.equal(i.date, date));
+        const initiallyHighlighted = this.ranges.current.items.find(i =>
+            this.ranges.dateComparer.equal(i.date, date)
+        );
         if (initiallyHighlighted && !initiallyHighlighted.isDisabled) {
             this._highlightedItem = initiallyHighlighted;
         }
@@ -100,11 +128,11 @@ export abstract class CalendarView implements AfterViewInit, OnDestroy {
 
     private highlightItem(item:CalendarItem | undefined):void {
         if (item) {
-            this._renderedItems.forEach(i => i.hasFocus = false);
+            this._renderedItems.forEach(i => (i.hasFocus = false));
             const rendered = this._renderedItems.find(ri => ri.item === item);
             if (rendered && !rendered.hasFocus) {
                 rendered.hasFocus = true;
-                rendered.changeDetector.detectChanges();
+                rendered.detectChanges();
             }
 
             this._highlightedItem = item;
@@ -164,7 +192,9 @@ export abstract class CalendarView implements AfterViewInit, OnDestroy {
         }
 
         if (!nextItem) {
-            let adjustedIndex = this.ranges.current.findIndex(this._highlightedItem);
+            let adjustedIndex = this.ranges.current.findIndex(
+                this._highlightedItem
+            );
 
             const nextItems = this.ranges.calc(isMovingForward).inRange;
 

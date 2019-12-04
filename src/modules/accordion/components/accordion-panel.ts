@@ -1,33 +1,46 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angular/core";
+import {
+    Component,
+    Input,
+    Output,
+    EventEmitter,
+    ChangeDetectorRef
+} from "@angular/core";
 import { SuiAccordionService } from "../services/accordion.service";
-import { TransitionController, Transition } from "../../transition/index";
+import { Transition } from "../../transition/classes/transition";
+import { TransitionController } from "../../transition/classes/transition-controller";
 
 @Component({
     selector: "sui-accordion-panel",
     exportAs: "suiAccordionPanel",
     template: `
-<!-- Title -->
-<div class="title" [class.active]="isOpen" (click)="toggle()" >
-    <ng-content select="[title]"></ng-content>
-</div>
-<!-- Content -->
-<div [suiCollapse]="!isOpen" [collapseDuration]="transitionDuration">
-    <div class="content" [class.active]="isOpen" [suiTransition]="transitionController">
-        <ng-content select="[content]"></ng-content>
-    </div>
-</div>
-`,
-    styles: [`
-/* Manual style as Semantic UI relies on > selector */
-.content {
-    padding: .5em 0 1em;
-}
+        <!-- Title -->
+        <div class="title" [class.active]="isOpen" (click)="toggle()">
+            <ng-content select="[title]"></ng-content>
+        </div>
+        <!-- Content -->
+        <div [suiCollapse]="!isOpen" [collapseDuration]="transitionDuration">
+            <div
+                class="content"
+                [class.active]="isOpen"
+                [suiTransition]="transitionController"
+            >
+                <ng-content select="[content]"></ng-content>
+            </div>
+        </div>
+    `,
+    styles: [
+        `
+            /* Manual style as Semantic UI relies on > selector */
+            .content {
+                padding: 0.5em 0 1em;
+            }
 
-/* Another > selector fix */
-:host:first-child .title {
-    border-top: none;
-}
-`]
+            /* Another > selector fix */
+            :host:first-child .title {
+                border-top: none;
+            }
+        `
+    ]
 })
 export class SuiAccordionPanel {
     private _service:SuiAccordionService;
@@ -65,7 +78,9 @@ export class SuiAccordionPanel {
 
             // Cancel all current animations, and fade the contents. The direction is automatic.
             this.transitionController.stopAll();
-            this.transitionController.animate(new Transition(this.transition, this.transitionDuration));
+            this.transitionController.animate(
+                new Transition(this.transition, this.transitionDuration)
+            );
         }
     }
 
@@ -89,7 +104,7 @@ export class SuiAccordionPanel {
     @Output()
     public isOpenChange:EventEmitter<boolean>;
 
-    constructor(private _changeDetector:ChangeDetectorRef) {
+    constructor(protected _changeDetector:ChangeDetectorRef) {
         this.transitionController = new TransitionController(false);
 
         this._isOpen = false;

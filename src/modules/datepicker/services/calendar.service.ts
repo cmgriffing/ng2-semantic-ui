@@ -1,8 +1,8 @@
 import { EventEmitter } from "@angular/core";
-import { IDatepickerLocaleValues } from "../../../behaviors/localization/index";
-import { DateUtil } from "../../../misc/util/index";
 import { CalendarViewType } from "../views/calendar-view";
 import { CalendarConfig } from "../classes/calendar-config";
+import { IDatepickerLocaleValues } from "../../../behaviors/localization/interfaces/values";
+import { DateUtil } from "../../../misc/util/helpers/date";
 
 export enum CalendarMode {
     DateOnly = 0,
@@ -51,7 +51,9 @@ export class CalendarService {
 
     public get minDate():Date | undefined {
         if (this._minDate && this.config.dateMinBound) {
-            return this._minDate > this.config.dateMinBound ? this._minDate : this.config.dateMinBound;
+            return this._minDate > this.config.dateMinBound
+                ? this._minDate
+                : this.config.dateMinBound;
         }
         return this._minDate || this.config.dateMinBound;
     }
@@ -62,7 +64,9 @@ export class CalendarService {
 
     public get maxDate():Date | undefined {
         if (this._maxDate && this.config.dateMaxBound) {
-            return this._maxDate < this.config.dateMaxBound ? this._maxDate : this.config.dateMaxBound;
+            return this._maxDate < this.config.dateMaxBound
+                ? this._maxDate
+                : this.config.dateMaxBound;
         }
         return this._maxDate || this.config.dateMaxBound;
     }
@@ -85,7 +89,10 @@ export class CalendarService {
 
     public onDateChange:EventEmitter<Date>;
 
-    constructor(config:CalendarConfig, public localeValues:IDatepickerLocaleValues) {
+    constructor(
+        config:CalendarConfig,
+        public localeValues:IDatepickerLocaleValues
+    ) {
         this.config = config;
 
         this.currentDate = new Date();
@@ -134,7 +141,10 @@ export class CalendarService {
         this.updateView(this.config.mappings.zoom, fromView);
     }
 
-    private updateView(mappings:Map<CalendarViewType, CalendarViewType>, fromView:CalendarViewType):void {
+    private updateView(
+        mappings:Map<CalendarViewType, CalendarViewType>,
+        fromView:CalendarViewType
+    ):void {
         const mapping = mappings.get(fromView);
         if (mapping == undefined) {
             throw new Error("Unknown view type.");

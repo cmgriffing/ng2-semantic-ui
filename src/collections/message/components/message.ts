@@ -1,5 +1,9 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { TransitionController, Transition, TransitionDirection } from "../../../modules/transition/index";
+import { TransitionController } from "../../../modules/transition/classes/transition-controller";
+import {
+    Transition,
+    TransitionDirection
+} from "../../../modules/transition/classes/transition";
 
 export interface IMessage {
     dismiss():void;
@@ -8,17 +12,23 @@ export interface IMessage {
 @Component({
     selector: "sui-message",
     template: `
-<div class="ui message {{ class }}" *ngIf="!isDismissed" [suiTransition]="transitionController">
-    <i class="close icon" *ngIf="isDismissable" (click)="dismiss()"></i>
-    <ng-content></ng-content>
-</div>
-`,
-    styles: [`
-/* Fix for CSS Bug */
-.ui.icon.visible.message {
-    display: flex !important;
-}
-`]
+        <div
+            class="ui message {{ class }}"
+            *ngIf="!isDismissed"
+            [suiTransition]="transitionController"
+        >
+            <i class="close icon" *ngIf="isDismissable" (click)="dismiss()"></i>
+            <ng-content></ng-content>
+        </div>
+    `,
+    styles: [
+        `
+            /* Fix for CSS Bug */
+            .ui.icon.visible.message {
+                display: flex !important;
+            }
+        `
+    ]
 })
 export class SuiMessage implements IMessage {
     @Input()
@@ -54,9 +64,16 @@ export class SuiMessage implements IMessage {
     }
 
     public dismiss():void {
-        this.transitionController.animate(new Transition(this.transition, this.transitionDuration, TransitionDirection.Out, () => {
-            this.isDismissed = true;
-            this.onDismiss.emit(this);
-        }));
+        this.transitionController.animate(
+            new Transition(
+                this.transition,
+                this.transitionDuration,
+                TransitionDirection.Out,
+                () => {
+                    this.isDismissed = true;
+                    this.onDismiss.emit(this);
+                }
+            )
+        );
     }
 }

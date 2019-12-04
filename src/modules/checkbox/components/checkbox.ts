@@ -13,7 +13,7 @@ import {
     ICustomValueAccessorHost,
     customValueAccessorFactory,
     CustomValueAccessor
-} from "../../../misc/util/index";
+} from "../../../misc/util/helpers/custom-value-accessor";
 
 @Component({
     selector: "sui-checkbox",
@@ -36,37 +36,37 @@ import {
 export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
     @HostBinding("class.ui")
     @HostBinding("class.checkbox")
-    private _checkboxClasses: boolean;
+    public checkboxClasses:boolean;
 
     @Input()
-    public name: string;
+    public name:string;
 
     @HostBinding("class.checked")
-    public isChecked: boolean;
+    public isChecked:boolean;
 
     @Output("checkChange")
-    public onCheckChange: EventEmitter<boolean>;
+    public onCheckChange:EventEmitter<boolean>;
 
     @Output("touched")
-    public onTouched: EventEmitter<void>;
+    public onTouched:EventEmitter<void>;
 
     @Input()
-    public isDisabled: boolean;
+    public isDisabled:boolean;
 
     @HostBinding("class.read-only")
     @Input()
-    public isReadonly: boolean;
+    public isReadonly:boolean;
 
-    public get checkedAttribute(): string | undefined {
+    public get checkedAttribute():string | undefined {
         return this.isChecked ? "" : undefined;
     }
 
-    public get isDisabledAttribute(): string | undefined {
+    public get isDisabledAttribute():string | undefined {
         return this.isDisabled ? "disabled" : undefined;
     }
 
     @ViewChild("checkbox", { static: true })
-    private _checkboxElement: ElementRef;
+    public checkboxElement:ElementRef;
 
     constructor() {
         this.isChecked = false;
@@ -76,16 +76,16 @@ export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
         this.isDisabled = false;
         this.isReadonly = false;
 
-        this._checkboxClasses = true;
+        this.checkboxClasses = true;
     }
 
     @HostListener("mousedown", ["$event"])
-    public onMouseDown(e: MouseEvent): void {
+    public onMouseDown(e:MouseEvent):void {
         e.preventDefault();
     }
 
     @HostListener("click")
-    public onClick(): void {
+    public onClick():void {
         if (!this.isDisabled && !this.isReadonly) {
             this.toggle();
             this.focusCheckbox();
@@ -93,21 +93,21 @@ export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
     }
 
     @HostListener("focusout")
-    public onFocusOut(): void {
+    public onFocusOut():void {
         this.onTouched.emit();
     }
 
-    public toggle(): void {
+    public toggle():void {
         this.isChecked = !this.isChecked;
         this.onCheckChange.emit(this.isChecked);
     }
 
-    public writeValue(value: boolean): void {
+    public writeValue(value:boolean):void {
         this.isChecked = value;
     }
 
-    private focusCheckbox(): void {
-        this._checkboxElement.nativeElement.focus();
+    private focusCheckbox():void {
+        this.checkboxElement.nativeElement.focus();
     }
 }
 
@@ -123,7 +123,7 @@ export class SuiCheckboxValueAccessor extends CustomValueAccessor<
     boolean,
     SuiCheckbox
 > {
-    constructor(host: SuiCheckbox) {
+    constructor(host:SuiCheckbox) {
         super(host);
     }
 }

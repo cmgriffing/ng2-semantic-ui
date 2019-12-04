@@ -1,10 +1,22 @@
-import { Directive, Input, ElementRef, TemplateRef, Renderer2 } from "@angular/core";
-import { ITemplateRefContext, Util, PositioningPlacement, SuiComponentFactory } from "../../../misc/util/index";
+import {
+    Directive,
+    Input,
+    ElementRef,
+    TemplateRef,
+    Renderer2
+} from "@angular/core";
 import { SuiPopup } from "../components/popup";
 import { PopupConfig, PopupTrigger } from "../classes/popup-config";
 import { SuiPopupConfig } from "../services/popup.service";
 import { SuiPopupController } from "../classes/popup-controller";
-import { SuiPopupTemplateController, ITemplatePopupContext, ITemplatePopupConfig } from "../classes/popup-template-controller";
+import {
+    SuiPopupTemplateController,
+    ITemplatePopupContext,
+    ITemplatePopupConfig
+} from "../classes/popup-template-controller";
+import { Util } from "../../../misc/util/helpers/util";
+import { PositioningPlacement } from "../../../misc/util/services/positioning.service";
+import { SuiComponentFactory } from "../../../misc/util/services/component-factory.service";
 
 const templateRef = TemplateRef;
 
@@ -63,7 +75,9 @@ export class SuiPopupDirective<T> extends SuiPopupTemplateController<T> {
     }
 
     @Input()
-    public set popupTemplate(template:TemplateRef<ITemplatePopupContext<T>> | undefined) {
+    public set popupTemplate(
+        template:TemplateRef<ITemplatePopupContext<T>> | undefined
+    ) {
         this.template = template;
     }
 
@@ -77,11 +91,17 @@ export class SuiPopupDirective<T> extends SuiPopupTemplateController<T> {
         this.configure(config);
     }
 
-    constructor(renderer:Renderer2,
-                element:ElementRef,
-                componentFactory:SuiComponentFactory,
-                popupDefaults:SuiPopupConfig) {
-
-        super(renderer, element, componentFactory, new PopupConfig(popupDefaults));
+    constructor(
+        protected _renderer:Renderer2,
+        public element:ElementRef,
+        protected _componentFactory:SuiComponentFactory,
+        protected _popupDefaults:SuiPopupConfig
+    ) {
+        super(
+            _renderer,
+            element,
+            _componentFactory,
+            new PopupConfig(_popupDefaults)
+        );
     }
 }

@@ -4,12 +4,8 @@ import { SuiTransition } from "./directives/transition";
 
 @NgModule({
     imports: [CommonModule],
-    declarations: [
-        SuiTransition
-    ],
-    exports: [
-        SuiTransition
-    ],
+    declarations: [SuiTransition],
+    exports: [SuiTransition],
     providers: []
 })
 export class SuiTransitionModule {}

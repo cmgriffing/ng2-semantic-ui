@@ -7,14 +7,15 @@ import {
     HostListener,
     HostBinding
 } from "@angular/core";
-import { PositioningService, IDynamicClasses } from "../../../misc/util/index";
-import {
-    TransitionController,
-    TransitionDirection,
-    Transition
-} from "../../transition/index";
 import { IPopup } from "../classes/popup-controller";
 import { TemplatePopupConfig } from "../classes/popup-template-controller";
+import { PositioningService } from "../../../misc/util/services/positioning.service";
+import { TransitionController } from "../../../modules/transition/classes/transition-controller";
+import {
+    TransitionDirection,
+    Transition
+} from "../../../modules/transition/classes/transition";
+import { IDynamicClasses } from "../../../misc/util/helpers/util";
 
 @Component({
     selector: "sui-popup",
@@ -80,55 +81,55 @@ import { TemplatePopupConfig } from "../classes/popup-template-controller";
 })
 export class SuiPopup implements IPopup {
     // Config settings for this popup.
-    public config: TemplatePopupConfig<any>;
+    public config:TemplatePopupConfig<any>;
 
-    public transitionController: TransitionController;
-    public positioningService: PositioningService;
+    public transitionController:TransitionController;
+    public positioningService:PositioningService;
 
     // Keeps track of whether the popup is open internally.
-    private _isOpen: boolean;
+    private _isOpen:boolean;
     // `setTimeout` timer pointer for cancelling popup close.
-    public closingTimeout: number;
+    public closingTimeout:number;
 
     // Fires when the popup opens (and the animation is completed).
-    public onOpen: EventEmitter<void>;
+    public onOpen:EventEmitter<void>;
     // Fires when the popup closes (and the animation is completed).
-    public onClose: EventEmitter<void>;
+    public onClose:EventEmitter<void>;
 
-    public get isOpen(): boolean {
+    public get isOpen():boolean {
         return this._isOpen;
     }
 
     // `ElementRef` for the positioning subject.
     @ViewChild("container", { read: ViewContainerRef, static: true })
-    private _container: ViewContainerRef;
+    public container:ViewContainerRef;
 
-    public set anchor(anchor: ElementRef) {
+    public set anchor(anchor:ElementRef) {
         // Whenever the anchor is set (which is when the popup is created), recreate the positioning service with the appropriate options.
         this.positioningService = new PositioningService(
             anchor,
-            this._container.element,
+            this.container.element,
             this.config.placement,
             ".dynamic.arrow"
         );
     }
 
     // Returns the direction (`top`, `left`, `right`, `bottom`) of the current placement.
-    public get direction(): string | undefined {
+    public get direction():string | undefined {
         if (this.positioningService) {
             return this.positioningService.actualPlacement.split(" ").shift();
         }
     }
 
     // Returns the alignment (`top`, `left`, `right`, `bottom`) of the current placement.
-    public get alignment(): string | undefined {
+    public get alignment():string | undefined {
         if (this.positioningService) {
             return this.positioningService.actualPlacement.split(" ").pop();
         }
     }
 
-    public get dynamicClasses(): IDynamicClasses {
-        const classes: IDynamicClasses = {};
+    public get dynamicClasses():IDynamicClasses {
+        const classes:IDynamicClasses = {};
         if (this.direction) {
             classes[this.direction] = true;
         }
@@ -146,12 +147,12 @@ export class SuiPopup implements IPopup {
 
     // `ViewContainerRef` for the element the template gets injected as a sibling of.
     @ViewChild("templateSibling", { read: ViewContainerRef, static: true })
-    public templateSibling: ViewContainerRef;
+    public templateSibling:ViewContainerRef;
 
     @HostBinding("attr.tabindex")
-    private _tabindex: number;
+    public tabindex:number;
 
-    constructor(public elementRef: ElementRef) {
+    constructor(public elementRef:ElementRef) {
         this.transitionController = new TransitionController(false);
 
         this._isOpen = false;
@@ -159,10 +160,10 @@ export class SuiPopup implements IPopup {
         this.onOpen = new EventEmitter<void>();
         this.onClose = new EventEmitter<void>();
 
-        this._tabindex = 0;
+        this.tabindex = 0;
     }
 
-    public open(): void {
+    public open():void {
         // Only attempt to open if currently closed.
         if (!this.isOpen) {
             // Cancel the closing timer.
@@ -203,7 +204,7 @@ export class SuiPopup implements IPopup {
         }
     }
 
-    public toggle(): void {
+    public toggle():void {
         if (!this.isOpen) {
             return this.open();
         }
@@ -211,7 +212,7 @@ export class SuiPopup implements IPopup {
         return this.close();
     }
 
-    public close(): void {
+    public close():void {
         // Only attempt to close if currently open.
         if (this.isOpen) {
             // Cancel all other transitions, and initiate the closing transition.
@@ -238,7 +239,7 @@ export class SuiPopup implements IPopup {
     }
 
     @HostListener("click", ["$event"])
-    public onClick(event: MouseEvent): void {
+    public onClick(event:MouseEvent):void {
         // Makes sense here, as the popup shouldn't be attached to any DOM element.
         event.stopPropagation();
     }

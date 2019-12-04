@@ -1,8 +1,13 @@
 import { TemplateRef } from "@angular/core";
-import { ITemplateRefContext, PositioningPlacement } from "../../../misc/util/index";
 import { IPopup } from "./popup-controller";
+import { PositioningPlacement } from "../../../misc/util/services/positioning.service";
 
-export type PopupTrigger = "hover" | "click" | "outsideClick" | "focus" | "manual";
+export type PopupTrigger =
+    | "hover"
+    | "click"
+    | "outsideClick"
+    | "focus"
+    | "manual";
 
 export const PopupTrigger = {
     Hover: "hover" as PopupTrigger,

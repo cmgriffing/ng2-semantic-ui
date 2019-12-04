@@ -1,4 +1,11 @@
-import { Renderer2, ElementRef, Directive, Input, HostBinding, ChangeDetectorRef } from "@angular/core";
+import {
+    Renderer2,
+    ElementRef,
+    Directive,
+    Input,
+    HostBinding,
+    ChangeDetectorRef
+} from "@angular/core";
 import { TransitionController } from "../classes/transition-controller";
 
 @Directive({
@@ -34,13 +41,19 @@ export class SuiTransition {
         return false;
     }
 
-    constructor(private _renderer:Renderer2, private _element:ElementRef, private _changeDetector:ChangeDetectorRef) {}
+    constructor(
+        protected _renderer:Renderer2,
+        public element:ElementRef,
+        protected _changeDetector:ChangeDetectorRef
+    ) {}
 
-    // Initialises the controller with the injected renderer and elementRef.
-    public setTransitionController(transitionController:TransitionController):void {
+    // Initialises the controller with the injected _renderer and elementRef.
+    public setTransitionController(
+        transitionController:TransitionController
+    ):void {
         this._controller = transitionController;
         this._controller.registerRenderer(this._renderer);
-        this._controller.registerElement(this._element.nativeElement);
+        this._controller.registerElement(this.element.nativeElement);
         this._controller.registerChangeDetector(this._changeDetector);
     }
 }

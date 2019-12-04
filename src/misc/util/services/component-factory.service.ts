@@ -1,21 +1,37 @@
 import {
-    Injectable, ApplicationRef, ComponentFactoryResolver, Injector, ComponentRef,
-    ReflectiveInjector, Provider, Type, ViewContainerRef, TemplateRef
+    Injectable,
+    ApplicationRef,
+    ComponentFactoryResolver,
+    Injector,
+    ComponentRef,
+    ReflectiveInjector,
+    Provider,
+    Type,
+    ViewContainerRef,
+    TemplateRef
 } from "@angular/core";
 
 export interface IImplicitContext<T> {
     $implicit?:T;
 }
-
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class SuiComponentFactory {
-    constructor(private _applicationRef:ApplicationRef,
-                private _componentFactoryResolver:ComponentFactoryResolver,
-                private _injector:Injector) {}
+    constructor(
+        private _applicationRef:ApplicationRef,
+        private _componentFactoryResolver:ComponentFactoryResolver,
+        private _injector:Injector
+    ) {}
 
-    public createComponent<T>(type:Type<T>, providers:Provider[] = []):ComponentRef<T> {
+    public createComponent<T>(
+        type:Type<T>,
+        providers:Provider[] = []
+    ):ComponentRef<T> {
         // Resolve a factory for creating components of type `type`.
-        const factory = this._componentFactoryResolver.resolveComponentFactory(type as Type<T>);
+        const factory = this._componentFactoryResolver.resolveComponentFactory(
+            type as Type<T>
+        );
 
         // Resolve and create an injector with the specified providers.
         const injector = ReflectiveInjector.resolveAndCreate(
@@ -29,12 +45,19 @@ export class SuiComponentFactory {
         return componentRef;
     }
 
-    public createView<T, U extends IImplicitContext<T>>(viewContainer:ViewContainerRef, template:TemplateRef<U>, context:U):void {
+    public createView<T, U extends IImplicitContext<T>>(
+        viewContainer:ViewContainerRef,
+        template:TemplateRef<U>,
+        context:U
+    ):void {
         viewContainer.createEmbeddedView<U>(template, context);
     }
 
     // Inserts the component into the specified view container.
-    public attachToView<T>(componentRef:ComponentRef<T>, viewContainer:ViewContainerRef):void {
+    public attachToView<T>(
+        componentRef:ComponentRef<T>,
+        viewContainer:ViewContainerRef
+    ):void {
         viewContainer.insert(componentRef.hostView, 0);
     }
 
@@ -49,7 +72,10 @@ export class SuiComponentFactory {
     }
 
     // Moves the component to the specified DOM element.
-    public moveToElement<T>(componentRef:ComponentRef<T>, element:Element):void {
+    public moveToElement<T>(
+        componentRef:ComponentRef<T>,
+        element:Element
+    ):void {
         element.appendChild(componentRef.location.nativeElement);
     }
 

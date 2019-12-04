@@ -22,22 +22,22 @@ import { SuiSidebarSibling } from "./sidebar-sibling";
     ]
 })
 export class SuiSidebarContainer implements AfterContentInit {
-    public service: SidebarService;
+    public service:SidebarService;
 
     @HostBinding("class.pushable")
-    private _containerClasses: boolean;
+    public containerClasses:boolean;
 
     @ContentChild(SuiSidebar, { static: true })
-    public sidebar: SuiSidebar;
+    public sidebar:SuiSidebar;
 
     @ContentChild(SuiSidebarSibling, { static: true })
-    public sibling: SuiSidebarSibling;
+    public sibling:SuiSidebarSibling;
 
     constructor() {
-        this._containerClasses = true;
+        this.containerClasses = true;
     }
 
-    public ngAfterContentInit(): void {
+    public ngAfterContentInit():void {
         if (!this.sidebar) {
             throw new Error(
                 "You must include a <sui-sidebar> element within the container."

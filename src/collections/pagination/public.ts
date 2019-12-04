@@ -1,3 +1,0 @@
-export {
-    SuiPaginationModule
-} from "./index";

@@ -1,7 +1,10 @@
 import { TemplateRef, Renderer2, ElementRef } from "@angular/core";
 import { SuiPopupController, IPopup } from "./popup-controller";
-import { ITemplateRefContext, SuiComponentFactory, IImplicitContext } from "../../../misc/util";
 import { PopupConfig, IPopupConfig } from "./popup-config";
+import {
+    SuiComponentFactory,
+    IImplicitContext
+} from "../../../misc/util/services/component-factory.service";
 
 const templateRef = TemplateRef;
 
@@ -23,12 +26,13 @@ export class SuiPopupTemplateController<T> extends SuiPopupController {
     public template?:TemplateRef<ITemplatePopupContext<T>>;
     public context?:T;
 
-    constructor(renderer:Renderer2,
-                element:ElementRef,
-                componentFactory:SuiComponentFactory,
-                config:PopupConfig) {
-
-        super(renderer, element, componentFactory, config);
+    constructor(
+        protected _renderer:Renderer2,
+        public element:ElementRef,
+        protected _componentFactory:SuiComponentFactory,
+        protected _config:PopupConfig
+    ) {
+        super(_renderer, element, _componentFactory, _config);
     }
 
     public configure(config?:ITemplatePopupConfig<T>):void {
@@ -45,10 +49,14 @@ export class SuiPopupTemplateController<T> extends SuiPopupController {
         if (this.template) {
             this.popup.templateSibling.clear();
 
-            this._componentFactory.createView(this.popup.templateSibling, this.template, {
-                $implicit: this.popup,
-                context: this.context
-            });
+            this._componentFactory.createView(
+                this.popup.templateSibling,
+                this.template,
+                {
+                    $implicit: this.popup,
+                    context: this.context
+                }
+            );
         }
 
         super.open();

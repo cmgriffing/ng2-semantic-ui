@@ -1,27 +1,43 @@
-import { Component, Directive, Input, Output, EventEmitter, HostBinding, HostListener } from "@angular/core";
-import { ICustomValueAccessorHost, customValueAccessorFactory, CustomValueAccessor } from "../../../misc/util/index";
+import {
+    Component,
+    Directive,
+    Input,
+    Output,
+    EventEmitter,
+    HostBinding,
+    HostListener
+} from "@angular/core";
+import {
+    customValueAccessorFactory,
+    CustomValueAccessor,
+    ICustomValueAccessorHost
+} from "../../../misc/util/helpers/custom-value-accessor";
 
 @Component({
     selector: "sui-rating",
     template: `
-<i class="icon"
-   *ngFor="let icon of icons; let i = index"
-   (mouseover)="onMouseover(i)"
-   (click)="onClick(i)"
-   [class.selected]="hoveredIndex >= i && !isReadonly"
-   [class.active]="value > i">
-</i>
-`,
-    styles: [`
-:host.read-only .icon {
-    cursor: auto
-}
-`]
+        <i
+            class="icon"
+            *ngFor="let icon of icons; let i = index"
+            (mouseover)="onMouseover(i)"
+            (click)="onClick(i)"
+            [class.selected]="hoveredIndex >= i && !isReadonly"
+            [class.active]="value > i"
+        >
+        </i>
+    `,
+    styles: [
+        `
+            :host.read-only .icon {
+                cursor: auto;
+            }
+        `
+    ]
 })
 export class SuiRating implements ICustomValueAccessorHost<number> {
     @HostBinding("class.ui")
     @HostBinding("class.rating")
-    private _ratingClasses:boolean;
+    public ratingClasses:boolean;
 
     public value:number;
 
@@ -57,7 +73,7 @@ export class SuiRating implements ICustomValueAccessorHost<number> {
         this.maximum = 5;
         this.isReadonly = false;
 
-        this._ratingClasses = true;
+        this.ratingClasses = true;
     }
 
     public onClick(i:number):void {
@@ -86,7 +102,10 @@ export class SuiRating implements ICustomValueAccessorHost<number> {
     host: { "(valueChange)": "onChange($event)" },
     providers: [customValueAccessorFactory(SuiRatingValueAccessor)]
 })
-export class SuiRatingValueAccessor extends CustomValueAccessor<number, SuiRating> {
+export class SuiRatingValueAccessor extends CustomValueAccessor<
+    number,
+    SuiRating
+> {
     constructor(host:SuiRating) {
         super(host);
     }

@@ -9,14 +9,15 @@ import {
     Input,
     Renderer2
 } from "@angular/core";
-import {
-    ICustomValueAccessorHost,
-    customValueAccessorFactory,
-    CustomValueAccessor
-} from "../../../misc/util/index";
-import { SuiLocalizationService } from "../../../behaviors/localization/index";
+
 import { SuiSelectBase } from "../classes/select-base";
 import { SuiSelectOption } from "./select-option";
+import {
+    customValueAccessorFactory,
+    CustomValueAccessor,
+    ICustomValueAccessorHost
+} from "../../../misc/util/helpers/custom-value-accessor";
+import { SuiLocalizationService } from "../../../behaviors/localization/services/localization.service";
 
 @Component({
     selector: "sui-select",
@@ -69,41 +70,41 @@ import { SuiSelectOption } from "./select-option";
 })
 export class SuiSelect<T, U> extends SuiSelectBase<T, U>
     implements ICustomValueAccessorHost<U> {
-    public selectedOption?: T;
+    public selectedOption?:T;
     // Stores the value written by ngModel before it can be matched to an option from `options`.
-    private _writtenOption?: U;
+    private _writtenOption?:U;
 
     @ViewChild("optionTemplateSibling", {
         read: ViewContainerRef,
         static: true
     })
-    private _optionTemplateSibling: ViewContainerRef;
+    private _optionTemplateSibling:ViewContainerRef;
 
     @Output()
-    public selectedOptionChange: EventEmitter<U>;
+    public selectedOptionChange:EventEmitter<U>;
 
-    private _placeholder: string;
+    private _placeholder:string;
 
     @Input()
-    public get placeholder(): string {
+    public get placeholder():string {
         return this._placeholder || this.localeValues.single.placeholder;
     }
 
-    public set placeholder(placeholder: string) {
+    public set placeholder(placeholder:string) {
         this._placeholder = placeholder;
     }
 
     constructor(
-        element: ElementRef,
-        renderer: Renderer2,
-        localizationService: SuiLocalizationService
+        public element:ElementRef,
+        protected _renderer:Renderer2,
+        protected _localizationService:SuiLocalizationService
     ) {
-        super(element, renderer, localizationService);
+        super(element, _renderer, _localizationService);
 
         this.selectedOptionChange = new EventEmitter<U>();
     }
 
-    protected optionsUpdateHook(): void {
+    protected optionsUpdateHook():void {
         if (!this._writtenOption && this.selectedOption) {
             // We need to check the option still exists.
             this.writeValue(this.valueGetter(this.selectedOption));
@@ -122,12 +123,12 @@ export class SuiSelect<T, U> extends SuiSelectBase<T, U>
         }
     }
 
-    protected queryUpdateHook(): void {
+    protected queryUpdateHook():void {
         // When the query is updated, we just abandon the current selection.
         this.selectedOption = undefined;
     }
 
-    public selectOption(option: T): void {
+    public selectOption(option:T):void {
         // Choose and emit the selected option.
         this.selectedOption = option;
         this.selectedOptionChange.emit(this.valueGetter(option));
@@ -142,7 +143,7 @@ export class SuiSelect<T, U> extends SuiSelectBase<T, U>
         this.focus();
     }
 
-    public writeValue(value: U): void {
+    public writeValue(value:U):void {
         if (value != undefined) {
             if (this.searchService.options.length > 0) {
                 // If the options have already been loaded, we can immediately match the ngModel value to an option.
@@ -171,14 +172,14 @@ export class SuiSelect<T, U> extends SuiSelectBase<T, U>
         }
     }
 
-    protected initialiseRenderedOption(option: SuiSelectOption<T>): void {
+    protected initialiseRenderedOption(option:SuiSelectOption<T>):void {
         super.initialiseRenderedOption(option);
 
         // Boldens the item so it appears selected in the dropdown.
         option.isActive = option.value === this.selectedOption;
     }
 
-    private drawSelectedOption(): void {
+    private drawSelectedOption():void {
         // Updates the active class on the newly selected option.
         if (this._renderedOptions) {
             this.onAvailableOptionsRendered();
@@ -203,7 +204,7 @@ export class SuiSelectValueAccessor<T, U> extends CustomValueAccessor<
     U,
     SuiSelect<T, U>
 > {
-    constructor(host: SuiSelect<T, U>) {
+    constructor(host:SuiSelect<T, U>) {
         super(host);
     }
 }

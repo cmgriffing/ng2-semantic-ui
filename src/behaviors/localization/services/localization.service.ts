@@ -1,5 +1,9 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { ILocaleValues, IPartialLocaleValues, RecursivePartial } from "../interfaces/values";
+import {
+    ILocaleValues,
+    IPartialLocaleValues,
+    RecursivePartial
+} from "../interfaces/values";
 import enGB from "../locales/en-GB";
 import * as $extend from "extend";
 
@@ -20,8 +24,9 @@ function lang(language:string):string {
 interface ILocalizationValuesContainer {
     [name:string]:IPartialLocaleValues;
 }
-
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class SuiLocalizationService {
     private _language:string;
 
@@ -76,6 +81,9 @@ export class SuiLocalizationService {
     }
 
     public interpolate(value:string, variables:[string, string][]):string {
-        return variables.reduce((s, [k, v]) => s.replace(new RegExp(`#{${k}}`, "g"), v), value);
+        return variables.reduce(
+            (s, [k, v]) => s.replace(new RegExp(`#{${k}}`, "g"), v),
+            value
+        );
     }
 }

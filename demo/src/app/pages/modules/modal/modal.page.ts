@@ -25,9 +25,8 @@ const exampleTemplateModalTemplate = `
 
 // Don't use template concatenation here as the Angular compiler complains.
 // tslint:disable-next-line:prefer-template
-export const exampleTemplateTemplate =
-    exampleTemplateModalTemplate +
-    `
+export const exampleTemplateTemplate = `
+    ${exampleTemplateModalTemplate}
 <div class="ui fluid action input">
     <input type="text" placeholder="Modal content..." [(ngModel)]="dynamicContent">
     <button class="ui primary button" (click)="open(dynamicContent)">Open</button>
@@ -62,7 +61,7 @@ const exampleComponentTemplate = `
     templateUrl: "./modal.page.html"
 })
 export class ModalPage {
-    public api: ApiDefinition = [
+    public api:ApiDefinition = [
         {
             selector: "<sui-modal>",
             properties: [
@@ -152,9 +151,9 @@ export class ModalPage {
             ]
         }
     ];
-    public exampleTemplateTemplate: string = exampleTemplateModalTemplate;
+    public exampleTemplateTemplate:string = exampleTemplateModalTemplate;
 
-    public autoCode: string = `
+    public autoCode:string = `
 <sui-modal [isClosable]="true" (dismissed)="alert($event)" #modal>
     <div class="header">Example</div>
     <div class="content">
@@ -167,9 +166,9 @@ export class ModalPage {
 </sui-modal>
 `;
 
-    public templateTemplate: string = exampleTemplateModalTemplate;
+    public templateTemplate:string = exampleTemplateModalTemplate;
 
-    public templateComponent: string = `
+    public templateComponent:string = `
 import {SuiModalService, TemplateModalConfig, ModalTemplate} from 'ng2-semantic-ui';
 
 export interface IContext {
@@ -185,7 +184,7 @@ export class MyComponent {
 }
 `;
 
-    public templateOpen: string = `
+    public templateOpen:string = `
 public open(dynamicContent:string = "Example") {
     const config = new TemplateModalConfig<IContext, string, string>(this.modalTemplate);
 
@@ -199,7 +198,7 @@ public open(dynamicContent:string = "Example") {
 }
 `;
 
-    public componentComponent: string = `
+    public componentComponent:string = `
 import {SuiModal, ComponentModalConfig, ModalSize} from "ng2-semantic-ui"
 
 interface IConfirmModalContext {
@@ -216,7 +215,7 @@ export class ConfirmModalComponent {
 }
 `;
 
-    public componentHelper: string = `
+    public componentHelper:string = `
 export class ConfirmModal extends ComponentModalConfig<IConfirmModalContext, void, void> {
     constructor(title:string, question:string, size = ModalSize.Small) {
         super(ConfirmModalComponent, { title, question });
@@ -228,7 +227,7 @@ export class ConfirmModal extends ComponentModalConfig<IConfirmModalContext, voi
 }
 `;
 
-    public componentOpen: string = `
+    public componentOpen:string = `
 this.modalService
     .open(new ConfirmModal("Are you sure?", "Are you sure about accepting this?", this.modalSize))
     .onApprove(() => alert("User has accepted."))
@@ -242,15 +241,15 @@ this.modalService
 })
 export class ModalExampleTemplate {
     @ViewChild("modalTemplate", { static: false })
-    public modalTemplate: ModalTemplate<{ data: string }, string, string>;
+    public modalTemplate:ModalTemplate<{ data:string }, string, string>;
 
-    public dynamicContent: string = "Example of dynamic content.";
+    public dynamicContent:string = "Example of dynamic content.";
 
-    constructor(public modalService: SuiModalService) {}
+    constructor(public modalService:SuiModalService) {}
 
-    public open(dynamicContent: string = "Example"): void {
+    public open(dynamicContent:string = "Example"):void {
         const config = new TemplateModalConfig<
-            { data: string },
+            { data:string },
             string,
             string
         >(this.modalTemplate);
@@ -264,14 +263,14 @@ export class ModalExampleTemplate {
             .onDeny(r => this.alert(`Denied with result: '${r}'.`));
     }
 
-    public alert(message: string): void {
+    public alert(message:string):void {
         this.modalService.open(new AlertModal(message));
     }
 }
 
 interface IConfirmModalContext {
-    title: string;
-    question: string;
+    title:string;
+    question:string;
 }
 
 @Component({
@@ -279,7 +278,7 @@ interface IConfirmModalContext {
     template: exampleComponentModalTemplate
 })
 export class ConfirmModalComponent {
-    constructor(public modal: SuiModal<IConfirmModalContext, void, void>) {}
+    constructor(public modal:SuiModal<IConfirmModalContext, void, void>) {}
 }
 
 export class ConfirmModal extends ComponentModalConfig<
@@ -288,9 +287,9 @@ export class ConfirmModal extends ComponentModalConfig<
     void
 > {
     constructor(
-        title: string,
-        question: string,
-        size: ModalSize = ModalSize.Small
+        title:string,
+        question:string,
+        size:ModalSize = ModalSize.Small
     ) {
         super(ConfirmModalComponent, { title, question });
 
@@ -305,18 +304,18 @@ export class ConfirmModal extends ComponentModalConfig<
     template: exampleComponentTemplate
 })
 export class ModalExampleComponent {
-    public availableSizes: string[] = [
+    public availableSizes:string[] = [
         "mini",
         "tiny",
         "small",
         "normal",
         "large"
     ];
-    public size: ModalSize = ModalSize.Small;
+    public size:ModalSize = ModalSize.Small;
 
-    constructor(public modalService: SuiModalService) {}
+    constructor(public modalService:SuiModalService) {}
 
-    public open(): void {
+    public open():void {
         this.modalService
             .open(
                 new ConfirmModal(
@@ -329,7 +328,7 @@ export class ModalExampleComponent {
             .onDeny(() => this.alert("User has denied."));
     }
 
-    public alert(message: string): void {
+    public alert(message:string):void {
         this.modalService.open(new AlertModal(message));
     }
 }

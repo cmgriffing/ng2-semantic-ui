@@ -1,7 +1,13 @@
-import { ComponentRef, ElementRef, Type, Renderer2, OnDestroy } from "@angular/core";
-import { SuiComponentFactory } from "../../../misc/util/index";
+import {
+    ComponentRef,
+    ElementRef,
+    Type,
+    Renderer2,
+    OnDestroy
+} from "@angular/core";
 import { SuiPopupController } from "./popup-controller";
 import { PopupConfig } from "./popup-config";
+import { SuiComponentFactory } from "../../../misc/util/services/component-factory.service";
 
 export class SuiPopupComponentController<T> extends SuiPopupController {
     // Stores reference to generated content component.
@@ -13,19 +19,25 @@ export class SuiPopupComponentController<T> extends SuiPopupController {
         }
     }
 
-    constructor(renderer:Renderer2,
-                element:ElementRef,
-                componentFactory:SuiComponentFactory,
-                private _component:Type<T>,
-                config:PopupConfig) {
-
-        super(renderer, element, componentFactory, config);
+    constructor(
+        protected _renderer:Renderer2,
+        public element:ElementRef,
+        protected _componentFactory:SuiComponentFactory,
+        protected _component:Type<T>,
+        protected _config:PopupConfig
+    ) {
+        super(_renderer, element, _componentFactory, _config);
     }
 
     public open():void {
         if (!this._contentComponentRef) {
-            this._contentComponentRef = this._componentFactory.createComponent(this._component as Type<T>);
-            this._componentFactory.attachToView(this._contentComponentRef, this.popup.templateSibling);
+            this._contentComponentRef = this._componentFactory.createComponent(
+                this._component as Type<T>
+            );
+            this._componentFactory.attachToView(
+                this._contentComponentRef,
+                this.popup.templateSibling
+            );
         }
 
         super.open();

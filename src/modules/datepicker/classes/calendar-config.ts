@@ -1,6 +1,13 @@
 import { CalendarMode } from "../services/calendar.service";
-import { CalendarMappings, DatetimeMappings, DateMappings, TimeMappings, MonthMappings, YearMappings } from "./calendar-mappings";
-import { DatePrecision, DateUtil } from "../../../misc/util/index";
+import {
+    CalendarMappings,
+    DatetimeMappings,
+    DateMappings,
+    TimeMappings,
+    MonthMappings,
+    YearMappings
+} from "./calendar-mappings";
+import { DatePrecision, DateUtil } from "../../../misc/util/helpers/date";
 
 export abstract class CalendarConfig {
     public mode:CalendarMode;
@@ -12,7 +19,12 @@ export abstract class CalendarConfig {
     public dateMinBound?:Date;
     public dateMaxBound?:Date;
 
-    constructor(mode:CalendarMode, precision:DatePrecision, mappings:CalendarMappings, fallback:string) {
+    constructor(
+        mode:CalendarMode,
+        precision:DatePrecision,
+        mappings:CalendarMappings,
+        fallback:string
+    ) {
         this.mode = mode;
         this.precision = precision;
         this.mappings = mappings;
@@ -20,41 +32,40 @@ export abstract class CalendarConfig {
     }
 
     public updateBounds(providedDate:Date):void {
-        this.dateMinBound = DateUtil.startOf(DatePrecision.Year, new Date(), true);
+        this.dateMinBound = DateUtil.startOf(
+            DatePrecision.Year,
+            new Date(),
+            true
+        );
         this.dateMinBound.setFullYear(0);
     }
 }
 
 export class DateConfigBase extends CalendarConfig {
-    constructor(precision:DatePrecision, mappings:CalendarMappings, fallback:string) {
+    constructor(
+        precision:DatePrecision,
+        mappings:CalendarMappings,
+        fallback:string
+    ) {
         super(CalendarMode.DateOnly, precision, mappings, fallback);
     }
 }
 
 export class YearConfig extends DateConfigBase {
     constructor() {
-        super(
-            DatePrecision.Year,
-            new YearMappings(),
-            "number");
+        super(DatePrecision.Year, new YearMappings(), "number");
     }
 }
 
 export class MonthConfig extends DateConfigBase {
     constructor() {
-        super(
-            DatePrecision.Month,
-            new MonthMappings(),
-            "month");
+        super(DatePrecision.Month, new MonthMappings(), "month");
     }
 }
 
 export class DateConfig extends DateConfigBase {
     constructor() {
-        super(
-            DatePrecision.Date,
-            new DateMappings(),
-            "date");
+        super(DatePrecision.Date, new DateMappings(), "date");
     }
 }
 
@@ -64,7 +75,8 @@ export class DatetimeConfig extends CalendarConfig {
             CalendarMode.Both,
             DatePrecision.Minute,
             new DatetimeMappings(),
-            "datetime-local");
+            "datetime-local"
+        );
     }
 }
 
@@ -74,11 +86,18 @@ export class TimeConfig extends CalendarConfig {
             CalendarMode.TimeOnly,
             DatePrecision.Minute,
             new TimeMappings(),
-            "time");
+            "time"
+        );
     }
 
     public updateBounds(providedDate:Date):void {
-        this.dateMaxBound = DateUtil.endOf(DatePrecision.Date, DateUtil.clone(providedDate));
-        this.dateMinBound = DateUtil.previous(DatePrecision.Date, DateUtil.clone(this.dateMaxBound));
+        this.dateMaxBound = DateUtil.endOf(
+            DatePrecision.Date,
+            DateUtil.clone(providedDate)
+        );
+        this.dateMinBound = DateUtil.previous(
+            DatePrecision.Date,
+            DateUtil.clone(this.dateMaxBound)
+        );
     }
 }

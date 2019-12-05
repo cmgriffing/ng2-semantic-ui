@@ -1,0 +1,16 @@
+import * as tslib_1 from "tslib";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { SuiTransition } from "./directives/transition";
+let SuiTransitionModule = class SuiTransitionModule {
+};
+SuiTransitionModule = tslib_1.__decorate([
+    NgModule({
+        imports: [CommonModule],
+        declarations: [SuiTransition],
+        exports: [SuiTransition],
+        providers: []
+    })
+], SuiTransitionModule);
+export { SuiTransitionModule };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidHJhbnNpdGlvbi5tb2R1bGUuanMiLCJzb3VyY2VSb290Ijoibmc6Ly9uZzItc2VtYW50aWMtdWkvIiwic291cmNlcyI6WyJtb2R1bGVzL3RyYW5zaXRpb24vdHJhbnNpdGlvbi5tb2R1bGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLE9BQU8sRUFBRSxRQUFRLEVBQUUsTUFBTSxlQUFlLENBQUM7QUFDekMsT0FBTyxFQUFFLFlBQVksRUFBRSxNQUFNLGlCQUFpQixDQUFDO0FBQy9DLE9BQU8sRUFBRSxhQUFhLEVBQUUsTUFBTSx5QkFBeUIsQ0FBQztBQVF4RCxJQUFhLG1CQUFtQixHQUFoQyxNQUFhLG1CQUFtQjtDQUFHLENBQUE7QUFBdEIsbUJBQW1CO0lBTi9CLFFBQVEsQ0FBQztRQUNOLE9BQU8sRUFBRSxDQUFDLFlBQVksQ0FBQztRQUN2QixZQUFZLEVBQUUsQ0FBQyxhQUFhLENBQUM7UUFDN0IsT0FBTyxFQUFFLENBQUMsYUFBYSxDQUFDO1FBQ3hCLFNBQVMsRUFBRSxFQUFFO0tBQ2hCLENBQUM7R0FDVyxtQkFBbUIsQ0FBRztTQUF0QixtQkFBbUIiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBOZ01vZHVsZSB9IGZyb20gXCJAYW5ndWxhci9jb3JlXCI7XG5pbXBvcnQgeyBDb21tb25Nb2R1bGUgfSBmcm9tIFwiQGFuZ3VsYXIvY29tbW9uXCI7XG5pbXBvcnQgeyBTdWlUcmFuc2l0aW9uIH0gZnJvbSBcIi4vZGlyZWN0aXZlcy90cmFuc2l0aW9uXCI7XG5cbkBOZ01vZHVsZSh7XG4gICAgaW1wb3J0czogW0NvbW1vbk1vZHVsZV0sXG4gICAgZGVjbGFyYXRpb25zOiBbU3VpVHJhbnNpdGlvbl0sXG4gICAgZXhwb3J0czogW1N1aVRyYW5zaXRpb25dLFxuICAgIHByb3ZpZGVyczogW11cbn0pXG5leHBvcnQgY2xhc3MgU3VpVHJhbnNpdGlvbk1vZHVsZSB7fVxuIl19

@@ -1,0 +1,16 @@
+import * as tslib_1 from "tslib";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { SuiDimmer } from "./components/dimmer";
+import { SuiTransitionModule } from "../../modules/transition/transition.module";
+let SuiDimmerModule = class SuiDimmerModule {
+};
+SuiDimmerModule = tslib_1.__decorate([
+    NgModule({
+        imports: [CommonModule, SuiTransitionModule],
+        declarations: [SuiDimmer],
+        exports: [SuiDimmer]
+    })
+], SuiDimmerModule);
+export { SuiDimmerModule };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGltbWVyLm1vZHVsZS5qcyIsInNvdXJjZVJvb3QiOiJuZzovL25nMi1zZW1hbnRpYy11aS8iLCJzb3VyY2VzIjpbIm1vZHVsZXMvZGltbWVyL2RpbW1lci5tb2R1bGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLE9BQU8sRUFBRSxRQUFRLEVBQUUsTUFBTSxlQUFlLENBQUM7QUFDekMsT0FBTyxFQUFFLFlBQVksRUFBRSxNQUFNLGlCQUFpQixDQUFDO0FBQy9DLE9BQU8sRUFBRSxTQUFTLEVBQUUsTUFBTSxxQkFBcUIsQ0FBQztBQUNoRCxPQUFPLEVBQUUsbUJBQW1CLEVBQUUsTUFBTSw0Q0FBNEMsQ0FBQztBQU9qRixJQUFhLGVBQWUsR0FBNUIsTUFBYSxlQUFlO0NBQUcsQ0FBQTtBQUFsQixlQUFlO0lBTDNCLFFBQVEsQ0FBQztRQUNOLE9BQU8sRUFBRSxDQUFDLFlBQVksRUFBRSxtQkFBbUIsQ0FBQztRQUM1QyxZQUFZLEVBQUUsQ0FBQyxTQUFTLENBQUM7UUFDekIsT0FBTyxFQUFFLENBQUMsU0FBUyxDQUFDO0tBQ3ZCLENBQUM7R0FDVyxlQUFlLENBQUc7U0FBbEIsZUFBZSIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IE5nTW9kdWxlIH0gZnJvbSBcIkBhbmd1bGFyL2NvcmVcIjtcbmltcG9ydCB7IENvbW1vbk1vZHVsZSB9IGZyb20gXCJAYW5ndWxhci9jb21tb25cIjtcbmltcG9ydCB7IFN1aURpbW1lciB9IGZyb20gXCIuL2NvbXBvbmVudHMvZGltbWVyXCI7XG5pbXBvcnQgeyBTdWlUcmFuc2l0aW9uTW9kdWxlIH0gZnJvbSBcIi4uLy4uL21vZHVsZXMvdHJhbnNpdGlvbi90cmFuc2l0aW9uLm1vZHVsZVwiO1xuXG5ATmdNb2R1bGUoe1xuICAgIGltcG9ydHM6IFtDb21tb25Nb2R1bGUsIFN1aVRyYW5zaXRpb25Nb2R1bGVdLFxuICAgIGRlY2xhcmF0aW9uczogW1N1aURpbW1lcl0sXG4gICAgZXhwb3J0czogW1N1aURpbW1lcl1cbn0pXG5leHBvcnQgY2xhc3MgU3VpRGltbWVyTW9kdWxlIHt9XG4iXX0=

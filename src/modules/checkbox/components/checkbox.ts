@@ -1,29 +1,42 @@
 import {
-    Component, Directive, Input, Output, HostListener, HostBinding,
-    EventEmitter, ViewChild, ElementRef
+    Component,
+    Directive,
+    Input,
+    Output,
+    HostListener,
+    HostBinding,
+    EventEmitter,
+    ViewChild,
+    ElementRef
 } from "@angular/core";
-import { ICustomValueAccessorHost, customValueAccessorFactory, CustomValueAccessor } from "../../../misc/util/index";
+import {
+    ICustomValueAccessorHost,
+    customValueAccessorFactory,
+    CustomValueAccessor
+} from "../../../misc/util/index";
 
 @Component({
     selector: "sui-checkbox",
     exportAs: "suiCheckbox",
     template: `
-<input class="hidden"
-       type="checkbox"
-       [attr.name]="name"
-       [attr.checked]="checkedAttribute"
-       [attr.disabled]="isDisabledAttribute"
-       [(ngModel)]="isChecked"
-       #checkbox>
-<label>
-    <ng-content></ng-content>
-</label>
-`
+        <input
+            class="hidden"
+            type="checkbox"
+            [attr.name]="name"
+            [attr.checked]="checkedAttribute"
+            [attr.disabled]="isDisabledAttribute"
+            [(ngModel)]="isChecked"
+            #checkbox
+        />
+        <label>
+            <ng-content></ng-content>
+        </label>
+    `
 })
 export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
     @HostBinding("class.ui")
     @HostBinding("class.checkbox")
-    private _checkboxClasses:boolean;
+    public checkboxClasses:boolean;
 
     @Input()
     public name:string;
@@ -52,7 +65,7 @@ export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
         return this.isDisabled ? "disabled" : undefined;
     }
 
-    @ViewChild("checkbox")
+    @ViewChild("checkbox", { static: true })
     private _checkboxElement:ElementRef;
 
     constructor() {
@@ -63,7 +76,7 @@ export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
         this.isDisabled = false;
         this.isReadonly = false;
 
-        this._checkboxClasses = true;
+        this.checkboxClasses = true;
     }
 
     @HostListener("mousedown", ["$event"])
@@ -106,7 +119,10 @@ export class SuiCheckbox implements ICustomValueAccessorHost<boolean> {
     },
     providers: [customValueAccessorFactory(SuiCheckboxValueAccessor)]
 })
-export class SuiCheckboxValueAccessor extends CustomValueAccessor<boolean, SuiCheckbox> {
+export class SuiCheckboxValueAccessor extends CustomValueAccessor<
+    boolean,
+    SuiCheckbox
+> {
     constructor(host:SuiCheckbox) {
         super(host);
     }

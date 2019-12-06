@@ -3,24 +3,26 @@ import { Component, Input, HostBinding } from "@angular/core";
 @Component({
     selector: "sui-progress",
     template: `
-<div class="bar" [style.width.%]="percentage">
-    <div class="progress" *ngIf="showProgress">{{ percentage }}%</div>
-</div>
-<div class="label">
-    <ng-content></ng-content>
-</div>
-`,
-    styles: [`
-.bar {
-    transition-duration: 300ms !important;
-    z-index: 1;
-}
-`]
+        <div class="bar" [style.width.%]="percentage">
+            <div class="progress" *ngIf="showProgress">{{ percentage }}%</div>
+        </div>
+        <div class="label">
+            <ng-content></ng-content>
+        </div>
+    `,
+    styles: [
+        `
+            .bar {
+                transition-duration: 300ms !important;
+                z-index: 1;
+            }
+        `
+    ]
 })
 export class SuiProgress {
     @HostBinding("class.ui")
     @HostBinding("class.progress")
-    private _popupClasses:boolean = true;
+    public popupClasses:boolean = true;
 
     private _value:number;
     private _maximum:number;
@@ -83,8 +85,11 @@ export class SuiProgress {
     }
 
     @HostBinding("class.success")
-    private get _reachedMaximum():boolean {
-        return this._overrideSuccess || ((this.value >= this.maximum) && this.autoSuccess);
+    public get reachedMaximum():boolean {
+        return (
+            this._overrideSuccess ||
+            (this.value >= this.maximum && this.autoSuccess)
+        );
     }
 
     @HostBinding("attr.data-percent")
@@ -115,6 +120,6 @@ export class SuiProgress {
         this.autoSuccess = true;
         this.showProgress = true;
 
-        this._popupClasses = true;
+        this.popupClasses = true;
     }
 }

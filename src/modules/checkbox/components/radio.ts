@@ -1,9 +1,21 @@
 import {
-    Component, Directive, Input, Output, HostListener, HostBinding,
-    EventEmitter, ViewChild, ElementRef, ContentChildren, AfterContentInit, QueryList
+    Component,
+    Directive,
+    Input,
+    Output,
+    HostListener,
+    HostBinding,
+    EventEmitter,
+    ViewChild,
+    ElementRef,
+    ContentChildren,
+    AfterContentInit,
+    QueryList
 } from "@angular/core";
 import {
-    ICustomValueAccessorHost, customValueAccessorFactory, CustomValueAccessor,
+    ICustomValueAccessorHost,
+    customValueAccessorFactory,
+    CustomValueAccessor,
     Util
 } from "../../../misc/util/index";
 import { Subscription } from "rxjs/Subscription";
@@ -11,24 +23,26 @@ import { Subscription } from "rxjs/Subscription";
 @Component({
     selector: "sui-radio-button",
     template: `
-<input class="hidden"
-       type="checkbox"
-       [attr.name]="name"
-       [attr.checked]="checkedAttribute"
-       [attr.disabled]="isDisabledAttribute"
-       [ngModel]="isChecked"
-       (ngModel)="currentValue = value"
-       #radio>
-<label>
-    <ng-content></ng-content>
-</label>
-`
+        <input
+            class="hidden"
+            type="checkbox"
+            [attr.name]="name"
+            [attr.checked]="checkedAttribute"
+            [attr.disabled]="isDisabledAttribute"
+            [ngModel]="isChecked"
+            (ngModel)="currentValue = value"
+            #radio
+        />
+        <label>
+            <ng-content></ng-content>
+        </label>
+    `
 })
 export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     @HostBinding("class.ui")
     @HostBinding("class.radio")
     @HostBinding("class.checkbox")
-    private _radioClasses:boolean = true;
+    public radioClasses:boolean = true;
 
     @Input()
     public name:string;
@@ -54,7 +68,7 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     @Input()
     public isReadonly:boolean;
 
-    @ViewChild("radio")
+    @ViewChild("radio", { static: true })
     private _radioElement:ElementRef;
 
     public get checkedAttribute():string | undefined {
@@ -73,7 +87,7 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
         this.isDisabled = false;
         this.isReadonly = false;
 
-        this._radioClasses = true;
+        this.radioClasses = true;
     }
 
     @HostListener("mousedown", ["$event"])
@@ -118,7 +132,10 @@ export class SuiRadio<T> implements ICustomValueAccessorHost<T> {
     },
     providers: [customValueAccessorFactory(SuiRadioValueAccessor)]
 })
-export class SuiRadioValueAccessor<T> extends CustomValueAccessor<T, SuiRadio<T>> {
+export class SuiRadioValueAccessor<T> extends CustomValueAccessor<
+    T,
+    SuiRadio<T>
+> {
     constructor(host:SuiRadio<T>) {
         super(host);
     }

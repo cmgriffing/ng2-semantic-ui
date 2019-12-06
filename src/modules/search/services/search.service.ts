@@ -1,7 +1,9 @@
 import { Util } from "../../../misc/util/index";
 import { LookupFn, LookupFnResult, FilterFn } from "../helpers/lookup-fn";
 
-interface ICachedArray<T> { [query:string]:T[]; }
+interface ICachedArray<T> {
+    [query:string]:T[];
+}
 
 export class SearchService<T, U> {
     // Stores the available options.
@@ -86,11 +88,18 @@ export class SearchService<T, U> {
             if (regex instanceof RegExp) {
                 // Only update the results if the query was valid regex.
                 // This avoids the results suddenly becoming empty if an invalid regex string is inputted.
-                return os
-                    // Filter on the options with a string match on the field we are testing.
-                    .filter(o => Util.Object.readValue<T, string>(o, this._optionsField)
-                        .toString()
-                        .match(regex));
+                return (
+                    os
+                        // Filter on the options with a string match on the field we are testing.
+                        .filter(o =>
+                            Util.Object.readValue<T, string>(
+                                o,
+                                this._optionsField
+                            )
+                                .toString()
+                                .match(regex)
+                        )
+                );
             }
 
             // Don't update since it wasn't a valid regex.
@@ -104,20 +113,23 @@ export class SearchService<T, U> {
     }
 
     // Updates the query after the specified search delay.
-    public updateQueryDelayed(query:string, callback:(err?:Error) => void = () => {}):void {
+    public updateQueryDelayed(
+        query:string,
+        callback:(err?:Error) => void = () => {}
+    ):void {
         this._query = query;
 
         clearTimeout(this._searchDelayTimeout);
-        this._searchDelayTimeout = window.setTimeout(
-            () => {
-                this.updateQuery(query, callback);
-            },
-            this.searchDelay
-        );
+        this._searchDelayTimeout = window.setTimeout(() => {
+            this.updateQuery(query, callback);
+        },                                           this.searchDelay);
     }
 
     // Updates the current search query.
-    public updateQuery(query:string, callback:(err?:Error) => void = () => {}):void {
+    public updateQuery(
+        query:string,
+        callback:(err?:Error) => void = () => {}
+    ):void {
         this._query = query;
 
         if (this._query === "" && !this.allowEmptyQuery) {
@@ -137,7 +149,10 @@ export class SearchService<T, U> {
             this._isSearching = true;
 
             // Call the options lookup without a this context.
-            const queryLookup = this._optionsLookup.call(undefined, this._query) as LookupFnResult<T[]>;
+            const queryLookup = this._optionsLookup.call(
+                undefined,
+                this._query
+            ) as LookupFnResult<T[]>;
 
             queryLookup
                 .then(results => {
@@ -155,7 +170,11 @@ export class SearchService<T, U> {
             return;
         }
 
-        const filtered = this.optionsFilter.call(undefined, this._options, this._query);
+        const filtered = this.optionsFilter.call(
+            undefined,
+            this._options,
+            this._query
+        );
         if (filtered) {
             this.updateResults(filtered);
         }
@@ -173,11 +192,19 @@ export class SearchService<T, U> {
     // tslint:disable-next-line:promise-function-async
     public initialLookup(initial:U[]):LookupFnResult<T[]>;
     // tslint:disable-next-line:promise-function-async
-    public initialLookup(initial:U | U[]):LookupFnResult<T> | LookupFnResult<T[]> {
+    public initialLookup(
+        initial:U | U[]
+    ):LookupFnResult<T> | LookupFnResult<T[]> {
         if (initial instanceof Array) {
-            return (this._optionsLookup as LookupFn<T, U[]>)(undefined, initial) as LookupFnResult<T[]>;
+            return ((this._optionsLookup as unknown) as LookupFn<T, U[]>)(
+                undefined,
+                initial
+            ) as LookupFnResult<T[]>;
         }
-        return (this._optionsLookup as LookupFn<T, U>)(undefined, initial) as LookupFnResult<T>;
+        return (this._optionsLookup as LookupFn<T, U>)(
+            undefined,
+            initial
+        ) as LookupFnResult<T>;
     }
 
     // Converts a query string to regex without throwing an error.

@@ -1,58 +1,80 @@
 import {
-    Component, Input, OnInit, ViewChild, ElementRef, Renderer2,
-    EventEmitter, Output, HostListener, ViewContainerRef, AfterViewInit
+    Component,
+    Input,
+    OnInit,
+    ViewChild,
+    ElementRef,
+    Renderer2,
+    EventEmitter,
+    Output,
+    HostListener,
+    ViewContainerRef,
+    AfterViewInit
 } from "@angular/core";
-import { Util, IDynamicClasses, KeyCode, SuiComponentFactory } from "../../../misc/util/index";
-import { TransitionController, Transition, TransitionDirection } from "../../transition/index";
+import {
+    Util,
+    IDynamicClasses,
+    KeyCode,
+    SuiComponentFactory
+} from "../../../misc/util/index";
+import {
+    TransitionController,
+    Transition,
+    TransitionDirection
+} from "../../transition/index";
 import { ModalControls, ModalResult } from "../classes/modal-controls";
 import { ModalConfig, ModalSize } from "../classes/modal-config";
 
 @Component({
     selector: "sui-modal",
     template: `
-<!-- Page dimmer for modal background. -->
-<sui-dimmer class="page"
+        <!-- Page dimmer for modal background. -->
+        <sui-dimmer
+            class="page"
             [class.inverted]="isInverted"
             [(isDimmed)]="dimBackground"
             [isClickable]="false"
             [transitionDuration]="transitionDuration"
             [wrapContent]="false"
-            (click)="close()">
+            (click)="close()"
+        >
+            <!-- Modal component, with transition component attached -->
+            <div
+                class="ui modal"
+                [suiTransition]="transitionController"
+                [class.active]="transitionController?.isVisible"
+                [class.fullscreen]="isFullScreen"
+                [class.basic]="isBasic"
+                [class.scroll]="mustScroll"
+                [class.inverted]="isInverted"
+                [ngClass]="dynamicClasses"
+                (click)="onClick($event)"
+                #modal
+            >
+                <!-- Configurable close icon -->
+                <i class="close icon" *ngIf="isClosable" (click)="close()"></i>
+                <!-- <ng-content> so that <sui-modal> can be used as a normal component. -->
+                <ng-content></ng-content>
+                <!-- @ViewChild reference so we can insert elements beside this div. -->
+                <div #templateSibling></div>
+            </div>
+        </sui-dimmer>
+    `,
+    styles: [
+        `
+            .ui.dimmer {
+                overflow-y: auto;
+            }
 
-    <!-- Modal component, with transition component attached -->
-    <div class="ui modal"
-         [suiTransition]="transitionController"
-         [class.active]="transitionController?.isVisible"
-         [class.fullscreen]="isFullScreen"
-         [class.basic]="isBasic"
-         [class.scroll]="mustScroll"
-         [class.inverted]="isInverted"
-         [ngClass]="dynamicClasses"
-         (click)="onClick($event)"
-         #modal>
-
-        <!-- Configurable close icon -->
-        <i class="close icon" *ngIf="isClosable" (click)="close()"></i>
-        <!-- <ng-content> so that <sui-modal> can be used as a normal component. -->
-        <ng-content></ng-content>
-        <!-- @ViewChild reference so we can insert elements beside this div. -->
-        <div #templateSibling></div>
-    </div>
-</sui-dimmer>
-`,
-    styles: [`
-.ui.dimmer {
-    overflow-y: auto;
-}
-
-/* avoid .scrolling as Semantic UI adds unwanted styles. */
-.scroll {
-    position: absolute !important;
-    margin-top: 3.5rem !important;
-    margin-bottom: 3.5rem !important;
-    top: 0;
-}
-`]
+            /* avoid .scrolling as Semantic UI adds unwanted styles. */
+            .scroll {
+                position: absolute !important;
+                margin-top: 3.5rem !important;
+                margin-bottom: 3.5rem !important;
+                top: 0;
+            }
+        `
+    ]
 })
 export class SuiModal<T, U> implements OnInit, AfterViewInit {
     @Input()
@@ -86,7 +108,7 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
     @Output("dismissed")
     public onDismiss:EventEmitter<void>;
 
-    @ViewChild("modal")
+    @ViewChild("modal", { static: true })
     private _modalElement:ElementRef;
 
     // Size used to display the modal.
@@ -155,7 +177,7 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
     private _isClosing:boolean;
 
     // `ViewContainerRef` for the element the template gets injected as a sibling of.
-    @ViewChild("templateSibling", { read: ViewContainerRef })
+    @ViewChild("templateSibling", { static: false, read: ViewContainerRef })
     public templateSibling:ViewContainerRef;
 
     // Parent element of modal before relocation to document body.
@@ -169,7 +191,11 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
         return classes;
     }
 
-    constructor(private _renderer:Renderer2, private _element:ElementRef, private _componentFactory:SuiComponentFactory) {
+    constructor(
+        private _renderer:Renderer2,
+        private _element:ElementRef,
+        private _componentFactory:SuiComponentFactory
+    ) {
         // Initialise with default configuration from `ModalConfig` (to avoid writing defaults twice).
         const config = new ModalConfig<undefined, T, U>();
         this.loadConfig(config);
@@ -182,7 +208,8 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
         // Initialise controls with actions for the `approve` and `deny` cases.
         this.controls = new ModalControls<T, U>(
             res => this.dismiss(() => this.onApprove.emit(res)),
-            res => this.dismiss(() => this.onDeny.emit(res)));
+            res => this.dismiss(() => this.onDeny.emit(res))
+        );
 
         // Internal variable initialisation.
         this.dimBackground = false;
@@ -192,16 +219,25 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
 
     public ngOnInit():void {
         // Transition the modal to be visible.
-        this.transitionController.animate(new Transition(this.transition, this.transitionDuration, TransitionDirection.In));
-        setTimeout(() => this.dimBackground = true);
+        this.transitionController.animate(
+            new Transition(
+                this.transition,
+                this.transitionDuration,
+                TransitionDirection.In
+            )
+        );
+        setTimeout(() => (this.dimBackground = true));
     }
 
     public ngAfterViewInit():void {
         // Move the modal to the document body to ensure correct scrolling.
         this._originalContainer = this._element.nativeElement.parentNode;
-        document.querySelector("body")!.appendChild(this._element.nativeElement);
+        document
+            .querySelector("body")!
+            .appendChild(this._element.nativeElement);
         // Remove the #templateSibling element from the DOM to fix bottom border styles.
-        const templateElement = this.templateSibling.element.nativeElement as Element;
+        const templateElement = this.templateSibling.element
+            .nativeElement as Element;
         if (templateElement.parentNode) {
             templateElement.parentNode.removeChild(templateElement);
         }
@@ -209,12 +245,18 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
         // Update margin offset to center modal correctly on-screen.
         const element = this._modalElement.nativeElement as Element;
         setTimeout(() => {
-            this._renderer.setStyle(element, "margin-top", `-${element.clientHeight / 2}px`);
+            this._renderer.setStyle(
+                element,
+                "margin-top",
+                `-${element.clientHeight / 2}px`
+            );
             this.updateScroll();
         });
 
         // Focus any element with [autofocus] attribute.
-        const autoFocus = element.querySelector("[autofocus]") as HTMLElement | null;
+        const autoFocus = element.querySelector(
+            "[autofocus]"
+        ) as HTMLElement | null;
         if (autoFocus) {
             // Autofocus after the browser has had time to process other event handlers.
             setTimeout(() => autoFocus.focus(), 10);
@@ -249,14 +291,22 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
             this.dimBackground = false;
             this.transitionController.stopAll();
             this.transitionController.animate(
-                new Transition(this.transition, this.transitionDuration, TransitionDirection.Out, () => {
-                    // When done, move the modal back to its original location, emit a dismiss event, and fire the callback.
-                    if (this._originalContainer) {
-                        this._originalContainer.appendChild(this._element.nativeElement);
+                new Transition(
+                    this.transition,
+                    this.transitionDuration,
+                    TransitionDirection.Out,
+                    () => {
+                        // When done, move the modal back to its original location, emit a dismiss event, and fire the callback.
+                        if (this._originalContainer) {
+                            this._originalContainer.appendChild(
+                                this._element.nativeElement
+                            );
+                        }
+                        this.onDismiss.emit();
+                        callback();
                     }
-                    this.onDismiss.emit();
-                    callback();
-                }));
+                )
+            );
         }
     }
 
@@ -271,7 +321,11 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
     // Decides whether the modal needs to reposition to allow scrolling.
     private updateScroll():void {
         // Semantic UI modal margin is 3.5rem, which is relative to the global font size, so for compatibility:
-        const fontSize = parseFloat(window.getComputedStyle(document.documentElement).getPropertyValue("font-size"));
+        const fontSize = parseFloat(
+            window
+                .getComputedStyle(document.documentElement)
+                .getPropertyValue("font-size")
+        );
         const margin = fontSize * 3.5;
 
         // _mustAlwaysScroll works by stopping _mustScroll from being automatically updated, so it stays `true`.
@@ -279,7 +333,8 @@ export class SuiModal<T, U> implements OnInit, AfterViewInit {
             const element = this._modalElement.nativeElement as Element;
 
             // The modal must scroll if the window height is smaller than the modal height + both margins.
-            this._mustScroll = window.innerHeight < element.clientHeight + margin * 2;
+            this._mustScroll =
+                window.innerHeight < element.clientHeight + margin * 2;
         }
     }
 

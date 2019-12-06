@@ -1,61 +1,82 @@
-import { Component, ViewChild, ViewContainerRef, ElementRef, EventEmitter, HostListener, HostBinding } from "@angular/core";
+import {
+    Component,
+    ViewChild,
+    ViewContainerRef,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    HostBinding
+} from "@angular/core";
 import { PositioningService, IDynamicClasses } from "../../../misc/util/index";
-import { TransitionController, TransitionDirection, Transition } from "../../transition/index";
+import {
+    TransitionController,
+    TransitionDirection,
+    Transition
+} from "../../transition/index";
 import { IPopup } from "../classes/popup-controller";
 import { TemplatePopupConfig } from "../classes/popup-template-controller";
 
 @Component({
     selector: "sui-popup",
     template: `
-<div class="ui popup"
-     [ngClass]="dynamicClasses"
-     [suiTransition]="transitionController"
-     [attr.direction]="direction"
-     #container>
+        <div
+            class="ui popup"
+            [ngClass]="dynamicClasses"
+            [suiTransition]="transitionController"
+            [attr.direction]="direction"
+            #container
+        >
+            <ng-container
+                *ngIf="!config.template && (!!config.header || !!config.text)"
+            >
+                <div class="header" *ngIf="config.header">
+                    {{ config.header }}
+                </div>
+                <div class="content">{{ config.text }}</div>
+            </ng-container>
+            <div #templateSibling></div>
 
-    <ng-container *ngIf="!config.template && (!!config.header || !!config.text)">
-        <div class="header" *ngIf="config.header">{{ config.header }}</div>
-        <div class="content">{{ config.text }}</div>
-    </ng-container>
-    <div #templateSibling></div>
+            <sui-popup-arrow
+                *ngIf="!config.isBasic"
+                [placement]="positioningService.actualPlacement"
+                [inverted]="config.isInverted"
+            ></sui-popup-arrow>
+        </div>
+    `,
+    styles: [
+        `
+            .ui.popup {
+                /* Autofit popup to the contents. */
+                right: auto;
+            }
 
-    <sui-popup-arrow *ngIf="!config.isBasic"
-                     [placement]="positioningService.actualPlacement"
-                     [inverted]="config.isInverted"></sui-popup-arrow>
-</div>
-`,
-    styles: [`
-.ui.popup {
-    /* Autofit popup to the contents. */
-    right: auto;
-}
-
-.ui.animating.popup {
-    /* When the popup is animating, it may not initially be in the correct position.
+            .ui.animating.popup {
+                /* When the popup is animating, it may not initially be in the correct position.
        This fires a mouse event, causing the anchor's mouseleave to fire - making the popup flicker.
        Setting pointer-events to none while animating fixes this bug. */
-    pointer-events: none;
-}
+                pointer-events: none;
+            }
 
-.ui.popup::before {
-    /* Hide the Semantic UI CSS arrow. */
-    display: none;
-}
+            .ui.popup::before {
+                /* Hide the Semantic UI CSS arrow. */
+                display: none;
+            }
 
-/* Offset popup by 0.75em above and below when placed 'vertically'. */
-.ui.popup[direction="top"],
-.ui.popup[direction="bottom"] {
-    margin-top: 0.75em;
-    margin-bottom: 0.75em;
-}
+            /* Offset popup by 0.75em above and below when placed 'vertically'. */
+            .ui.popup[direction="top"],
+            .ui.popup[direction="bottom"] {
+                margin-top: 0.75em;
+                margin-bottom: 0.75em;
+            }
 
-/* Offset popup by 0.75em either side when placed 'horizontally'. */
-.ui.popup[direction="left"],
-.ui.popup[direction="right"] {
-    margin-left: 0.75em;
-    margin-right: 0.75em;
-}
-`]
+            /* Offset popup by 0.75em either side when placed 'horizontally'. */
+            .ui.popup[direction="left"],
+            .ui.popup[direction="right"] {
+                margin-left: 0.75em;
+                margin-right: 0.75em;
+            }
+        `
+    ]
 })
 export class SuiPopup implements IPopup {
     // Config settings for this popup.
@@ -79,12 +100,17 @@ export class SuiPopup implements IPopup {
     }
 
     // `ElementRef` for the positioning subject.
-    @ViewChild("container", { read: ViewContainerRef })
+    @ViewChild("container", { static: true, read: ViewContainerRef })
     private _container:ViewContainerRef;
 
     public set anchor(anchor:ElementRef) {
         // Whenever the anchor is set (which is when the popup is created), recreate the positioning service with the appropriate options.
-        this.positioningService = new PositioningService(anchor, this._container.element, this.config.placement, ".dynamic.arrow");
+        this.positioningService = new PositioningService(
+            anchor,
+            this._container.element,
+            this.config.placement,
+            ".dynamic.arrow"
+        );
     }
 
     // Returns the direction (`top`, `left`, `right`, `bottom`) of the current placement.
@@ -119,11 +145,11 @@ export class SuiPopup implements IPopup {
     }
 
     // `ViewContainerRef` for the element the template gets injected as a sibling of.
-    @ViewChild("templateSibling", { read: ViewContainerRef })
+    @ViewChild("templateSibling", { static: false, read: ViewContainerRef })
     public templateSibling:ViewContainerRef;
 
     @HostBinding("attr.tabindex")
-    private _tabindex:number;
+    public tabindex:number;
 
     constructor(public elementRef:ElementRef) {
         this.transitionController = new TransitionController(false);
@@ -133,7 +159,7 @@ export class SuiPopup implements IPopup {
         this.onOpen = new EventEmitter<void>();
         this.onClose = new EventEmitter<void>();
 
-        this._tabindex = 0;
+        this.tabindex = 0;
     }
 
     public open():void {
@@ -145,16 +171,27 @@ export class SuiPopup implements IPopup {
             // Cancel all other transitions, and initiate the opening transition.
             this.transitionController.stopAll();
             this.transitionController.animate(
-                new Transition(this.config.transition, this.config.transitionDuration, TransitionDirection.In, () => {
-                    // Focus any element with [autofocus] attribute.
-                    const autoFocus = this.elementRef.nativeElement.querySelector("[autofocus]") as HTMLElement | null;
-                    if (autoFocus) {
-                        // Autofocus after the browser has had time to process other event handlers.
-                        setTimeout(() => autoFocus.focus(), 10);
-                        // Try to focus again when the modal has opened so that autofocus works in IE11.
-                        setTimeout(() => autoFocus.focus(), this.config.transitionDuration);
+                new Transition(
+                    this.config.transition,
+                    this.config.transitionDuration,
+                    TransitionDirection.In,
+                    () => {
+                        // Focus any element with [autofocus] attribute.
+                        const autoFocus = this.elementRef.nativeElement.querySelector(
+                            "[autofocus]"
+                        ) as HTMLElement | null;
+                        if (autoFocus) {
+                            // Autofocus after the browser has had time to process other event handlers.
+                            setTimeout(() => autoFocus.focus(), 10);
+                            // Try to focus again when the modal has opened so that autofocus works in IE11.
+                            setTimeout(
+                                () => autoFocus.focus(),
+                                this.config.transitionDuration
+                            );
+                        }
                     }
-                }));
+                )
+            );
 
             // Refresh the popup position after a brief delay to allow for browser processing time.
             this.positioningService.placement = this.config.placement;
@@ -180,12 +217,20 @@ export class SuiPopup implements IPopup {
             // Cancel all other transitions, and initiate the closing transition.
             this.transitionController.stopAll();
             this.transitionController.animate(
-                new Transition(this.config.transition, this.config.transitionDuration, TransitionDirection.Out));
+                new Transition(
+                    this.config.transition,
+                    this.config.transitionDuration,
+                    TransitionDirection.Out
+                )
+            );
 
             // Cancel the closing timer.
             clearTimeout(this.closingTimeout);
             // Start the closing timer, that fires the `onClose` event after the transition duration number of milliseconds.
-            this.closingTimeout = window.setTimeout(() => this.onClose.emit(), this.config.transitionDuration);
+            this.closingTimeout = window.setTimeout(
+                () => this.onClose.emit(),
+                this.config.transitionDuration
+            );
 
             // Finally, set the popup to be closed.
             this._isOpen = false;

@@ -1,9 +1,21 @@
 import {
-    Directive, Input, HostBinding, EventEmitter, Output, AfterContentInit, ContentChild,
-    ElementRef, HostListener, QueryList, ContentChildren
+    Directive,
+    Input,
+    HostBinding,
+    EventEmitter,
+    Output,
+    AfterContentInit,
+    ContentChild,
+    ElementRef,
+    HostListener,
+    QueryList,
+    ContentChildren
 } from "@angular/core";
 import { HandledEvent, KeyCode, IFocusEvent } from "../../../misc/util/index";
-import { DropdownService, DropdownAutoCloseType } from "../services/dropdown.service";
+import {
+    DropdownService,
+    DropdownAutoCloseType
+} from "../services/dropdown.service";
 import { SuiDropdownMenu } from "./dropdown-menu";
 
 @Directive({
@@ -12,7 +24,7 @@ import { SuiDropdownMenu } from "./dropdown-menu";
 export class SuiDropdown implements AfterContentInit {
     public service:DropdownService;
 
-    @ContentChild(SuiDropdownMenu)
+    @ContentChild(SuiDropdownMenu, { static: true })
     private _menu:SuiDropdownMenu;
 
     @ContentChildren(SuiDropdown, { descendants: true })
@@ -91,13 +103,14 @@ export class SuiDropdown implements AfterContentInit {
 
     public ngAfterContentInit():void {
         if (!this._menu) {
-            throw new Error("You must set [suiDropdownMenu] on the menu element.");
+            throw new Error(
+                "You must set [suiDropdownMenu] on the menu element."
+            );
         }
         this._menu.service = this.service;
 
         this.childrenUpdated();
-        this._children.changes
-            .subscribe(() => this.childrenUpdated());
+        this._children.changes.subscribe(() => this.childrenUpdated());
     }
 
     private childrenUpdated():void {
@@ -117,7 +130,7 @@ export class SuiDropdown implements AfterContentInit {
     }
 
     @HostListener("focusout", ["$event"])
-    private onFocusOut(e:IFocusEvent):void {
+    public onFocusOut(e:IFocusEvent):void {
         if (!this._element.nativeElement.contains(e.relatedTarget)) {
             this.externallyClose();
         }
@@ -127,7 +140,6 @@ export class SuiDropdown implements AfterContentInit {
     public onKeypress(e:HandledEvent & KeyboardEvent):void {
         // Block the keyboard event from being fired on parent dropdowns.
         if (!e.eventHandled) {
-
             if (e.keyCode === KeyCode.Enter) {
                 e.eventHandled = true;
 
@@ -137,9 +149,11 @@ export class SuiDropdown implements AfterContentInit {
     }
 
     private externallyClose():void {
-        if (this.service.autoCloseMode === DropdownAutoCloseType.ItemClick ||
-                this.service.autoCloseMode === DropdownAutoCloseType.OutsideClick) {
-                // No need to reflect in parent since they are also bound to document.
+        if (
+            this.service.autoCloseMode === DropdownAutoCloseType.ItemClick ||
+            this.service.autoCloseMode === DropdownAutoCloseType.OutsideClick
+        ) {
+            // No need to reflect in parent since they are also bound to document.
             this.service.setOpenState(false);
         }
     }

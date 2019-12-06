@@ -1,4 +1,10 @@
-import { ComponentRef, ElementRef, HostListener, OnDestroy, Renderer2 } from "@angular/core";
+import {
+    ComponentRef,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    Renderer2
+} from "@angular/core";
 import { SuiComponentFactory } from "../../../misc/util/index";
 import { PopupConfig, PopupTrigger, IPopupConfig } from "./popup-config";
 import { SuiPopup } from "../components/popup";
@@ -26,11 +32,12 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
     // Function to remove the document click handler.
     private _documentListener:() => void;
 
-    constructor(renderer:Renderer2,
-                protected _element:ElementRef,
-                protected _componentFactory:SuiComponentFactory,
-                config:PopupConfig) {
-
+    constructor(
+        renderer:Renderer2,
+        protected _element:ElementRef,
+        protected _componentFactory:SuiComponentFactory,
+        config:PopupConfig
+    ) {
         // Generate a new SuiPopup component and attach it to the application view.
         this._componentRef = this._componentFactory.createComponent(SuiPopup);
 
@@ -40,7 +47,11 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
         // When the popup is closed (onClose fires on animation complete),
         this.popup.onClose.subscribe(() => this.cleanup());
 
-        this._documentListener = renderer.listen("document", "click", (e:MouseEvent) => this.onDocumentClick(e));
+        this._documentListener = renderer.listen(
+            "document",
+            "click",
+            (e:MouseEvent) => this.onDocumentClick(e)
+        );
     }
 
     public configure(config?:IPopupConfig):void {
@@ -54,7 +65,10 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
         clearTimeout(this._openingTimeout);
 
         // Start the popup opening after the specified delay interval.
-        this._openingTimeout = window.setTimeout(() => this.open(), this.popup.config.delay);
+        this._openingTimeout = window.setTimeout(
+            () => this.open(),
+            this.popup.config.delay
+        );
     }
 
     public open():void {
@@ -129,13 +143,16 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
 
     @HostListener("click")
     private onClick():void {
-        if (this.popup.config.trigger === PopupTrigger.Click ||
-            this.popup.config.trigger === PopupTrigger.OutsideClick) {
-
+        if (
+            this.popup.config.trigger === PopupTrigger.Click ||
+            this.popup.config.trigger === PopupTrigger.OutsideClick
+        ) {
             // Repeated clicks require a toggle, rather than just opening the popup each time.
             this.toggleDelayed();
-        } else if (this.popup.config.trigger === PopupTrigger.Focus &&
-                   (!this._componentRef || (this._componentRef && !this.popup.isOpen))) {
+        } else if (
+            this.popup.config.trigger === PopupTrigger.Focus &&
+            (!this._componentRef || (this._componentRef && !this.popup.isOpen))
+        ) {
             // Repeated clicks with a focus trigger requires an open (as focus isn't ever lost on repeated click).
             this.openDelayed();
         }
@@ -143,7 +160,10 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
 
     public onDocumentClick(e:MouseEvent):void {
         // If the popup trigger is outside click,
-        if (this._componentRef && this.popup.config.trigger === PopupTrigger.OutsideClick) {
+        if (
+            this._componentRef &&
+            this.popup.config.trigger === PopupTrigger.OutsideClick
+        ) {
             const target = e.target as Element;
             // Close the popup if the click is outside of the popup element.
             if (!(this._element.nativeElement as Element).contains(target)) {
@@ -153,18 +173,19 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
     }
 
     @HostListener("focusin")
-    private onFocusIn():void {
+    public onFocusIn():void {
         if (this.popup.config.trigger === PopupTrigger.Focus) {
             this.openDelayed();
         }
     }
 
     @HostListener("focusout", ["$event"])
-    private onFocusOut(e:any):void {
-        if (!this._element.nativeElement.contains(e.relatedTarget) &&
+    public onFocusOut(e:any):void {
+        if (
+            !this._element.nativeElement.contains(e.relatedTarget) &&
             !this.popup.elementRef.nativeElement.contains(e.relatedTarget) &&
-            this.popup.config.trigger === PopupTrigger.Focus) {
-
+            this.popup.config.trigger === PopupTrigger.Focus
+        ) {
             this.close();
         }
     }
@@ -172,7 +193,10 @@ export abstract class SuiPopupController implements IPopup, OnDestroy {
     protected cleanup():void {
         clearTimeout(this._openingTimeout);
 
-        if (this._componentRef.instance && this._componentRef.instance.positioningService) {
+        if (
+            this._componentRef.instance &&
+            this._componentRef.instance.positioningService
+        ) {
             this._componentRef.instance.positioningService.destroy();
         }
 

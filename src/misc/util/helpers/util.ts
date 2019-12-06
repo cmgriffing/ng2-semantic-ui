@@ -12,9 +12,13 @@ export enum KeyCode {
     Backspace = 8
 }
 
-interface IRecursiveObject { [name:string]:IRecursiveObject; }
+interface IRecursiveObject {
+    [name:string]:IRecursiveObject;
+}
 
-export interface ITemplateRefContext<T> { $implicit:T; }
+export interface ITemplateRefContext<T> {
+    $implicit:T;
+}
 
 export interface IAugmentedElement extends Element {
     closest(selector:string):IAugmentedElement;
@@ -31,7 +35,9 @@ export interface IDynamicClasses {
 export const Util = {
     Array: {
         range(n:number, offset:number = 0):number[] {
-            return Array(n).fill(0).map((z, i) => i + offset);
+            return Array(n)
+                .fill(0)
+                .map((z, i) => i + offset);
         },
         group<T>(items:T[], groupLength:number):T[][] {
             const mutable = items.slice(0);
@@ -43,14 +49,12 @@ export const Util = {
             return groups;
         },
         groupBy<T>(items:T[], field:keyof T):{ [name:string]:T[] } {
-            return items.reduce<{ [name:string]:T[] }>(
-                (groups, i) => {
-                    const fieldValue = i[field].toString();
-                    groups[fieldValue] = groups[fieldValue] || [];
-                    groups[fieldValue].push(i);
-                    return groups;
-                },
-                Object());
+            return items.reduce<{ [name:string]:T[] }>((groups, i) => {
+                const fieldValue = (i[field] as any).toString();
+                groups[fieldValue] = groups[fieldValue] || [];
+                groups[fieldValue].push(i);
+                return groups;
+            },                                         Object());
         },
         flatten<T>(items:T[][]):T[] {
             return items.reduce((is, i) => is.concat(i), []);
@@ -81,16 +85,16 @@ export const Util = {
     Object: {
         readValue<T, U>(object:T, path?:string):U {
             if (!path) {
-                return object as any as U;
+                return (object as any) as U;
             }
 
             let recursed:IRecursiveObject | undefined;
 
             for (let i = 0, p = path.split("."), len = p.length; i < len; i++) {
-                recursed = (object as any as IRecursiveObject)[p[i]];
+                recursed = ((object as any) as IRecursiveObject)[p[i]];
             }
 
-            return recursed as any as U;
+            return (recursed as any) as U;
         }
     },
 

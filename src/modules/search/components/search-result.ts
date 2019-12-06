@@ -1,8 +1,17 @@
 import {
-    Component, ViewChild, ViewContainerRef, Renderer2, ElementRef, HostBinding,
-    Input, TemplateRef
+    Component,
+    ViewChild,
+    ViewContainerRef,
+    Renderer2,
+    ElementRef,
+    HostBinding,
+    Input,
+    TemplateRef
 } from "@angular/core";
-import { ITemplateRefContext, SuiComponentFactory } from "../../../misc/util/index";
+import {
+    ITemplateRefContext,
+    SuiComponentFactory
+} from "../../../misc/util/index";
 import { IResultContext } from "./search";
 
 // See https://github.com/Microsoft/TypeScript/issues/13449.
@@ -11,14 +20,14 @@ const templateRef = TemplateRef;
 @Component({
     selector: "sui-search-result",
     template: `
-<span #templateSibling></span>
-<span *ngIf="!template" [innerHTML]="formatter(value, query)"></span>
-`
+        <span #templateSibling></span>
+        <span *ngIf="!template" [innerHTML]="formatter(value, query)"></span>
+    `
 })
 export class SuiSearchResult<T> {
     // Sets the Semantic UI classes on the host element.
     @HostBinding("class.result")
-    private _optionClasses:boolean;
+    public optionClasses:boolean;
 
     @Input()
     public value:T;
@@ -40,19 +49,23 @@ export class SuiSearchResult<T> {
     public set template(template:TemplateRef<IResultContext<T>> | undefined) {
         this._template = template;
         if (this.template) {
-            this.componentFactory.createView(this.templateSibling, this.template, {
-                $implicit: this.value,
-                query: this.query
-            });
+            this.componentFactory.createView(
+                this.templateSibling,
+                this.template,
+                {
+                    $implicit: this.value,
+                    query: this.query
+                }
+            );
         }
     }
 
     // Placeholder to draw template beside.
-    @ViewChild("templateSibling", { read: ViewContainerRef })
+    @ViewChild("templateSibling", { static: true, read: ViewContainerRef })
     public templateSibling:ViewContainerRef;
 
     constructor(public componentFactory:SuiComponentFactory) {
-        this._optionClasses = true;
+        this.optionClasses = true;
 
         // By default we make this function return an empty string, for the brief moment when it isn't displaying the correct label.
         this.formatter = value => "";
